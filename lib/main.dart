@@ -98,26 +98,32 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
     return ScopedModel<AppModel>(
-        model: model,
-        child: ScopedModelDescendant<AppModel>(
-            builder: (context, child, model) => Scaffold(
-                appBar: AppBar(
-                    title: Text(widget.title),
-                    leading: IconButton(
-                      icon: Icon(Icons.access_alarm),
-                      onPressed: () {},
-                    )),
-                body: ScopedModel<CardManagerModel>(
-                    model: CardManagerModel()
-                      ..init(
-                          allC: allC,
-                          allPlayers: allPlayers,
-                          screenHeight: screenHeight,
-                          screenWidth: screenWidth),
-                    child: CardManager(
-                      allCardKey: allC,
-                      screenHight: screenHeight,
-                      screenWidth: screenWidth,
-                    )))));
+      model: model,
+      child: ScopedModelDescendant<AppModel>(
+        builder: (context, child, model) => Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+            leading: IconButton(
+              icon: Icon(Icons.access_alarm),
+              onPressed: () {},
+            ),
+          ),
+          body: ScopedModel<CardManagerModel>(
+            model: CardManagerModel()
+              ..init(
+                allC: allC,
+                allPlayers: allPlayers,
+                screenHeight: screenHeight,
+                screenWidth: screenWidth,
+              ),
+            child: CardManager(
+              allCardKey: allC,
+              screenHight: screenHeight,
+              screenWidth: screenWidth,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
