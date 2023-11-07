@@ -6,17 +6,18 @@ import 'package:animation_playground/classes/player.dart';
 
 /// APP MODEL
 class CardManagerModel extends Model {
-  double _screenWidth;
-  double _screenHeight;
-  List<GlobalKey<CardItemState>> allCards;
-  List<Player> players;
+  double _screenWidth = 0;
+  double _screenHeight = 0;
+  List<GlobalKey<CardItemState>> allCards = [];
+  List<Player> players = [];
   bool distributed = false;
 
-  Future init(
-      {List<GlobalKey<CardItemState>> allC,
-      List<Player> allPlayers,
-      double screenWidth,
-      double screenHeight}) async {
+  Future init({
+    required List<GlobalKey<CardItemState>> allC,
+    required List<Player> allPlayers,
+    required double screenWidth,
+    required double screenHeight,
+  }) async {
     allCards = allC;
     players = allPlayers;
 

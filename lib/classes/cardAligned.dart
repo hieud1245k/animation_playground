@@ -3,7 +3,7 @@ import 'package:animation_playground/classes/vector.dart';
 import 'package:flutter/material.dart';
 
 class CardItemAligned extends StatefulWidget {
-  CardItemAligned({Key key, this.color, this.value}) : super(key: key);
+  CardItemAligned({Key? key, required this.color, required this.value}) : super(key: key);
 
   final int value;
   final Color color;
@@ -11,11 +11,10 @@ class CardItemAligned extends StatefulWidget {
   CardItemAlignedState createState() => CardItemAlignedState();
 }
 
-class CardItemAlignedState extends State<CardItemAligned>
-    with TickerProviderStateMixin {
-  AnimationController controller;
-  Tween<double> animationTween;
-  Animation<double> animation;
+class CardItemAlignedState extends State<CardItemAligned> with TickerProviderStateMixin {
+  late AnimationController controller;
+  late Tween<double> animationTween;
+  late Animation<double> animation;
 
   bool isDragging = false; //shows if card is dragging by finger
   bool isAnimating = false; //shows if card is thowing(sliding)
@@ -25,12 +24,12 @@ class CardItemAlignedState extends State<CardItemAligned>
   double y = 0; //card position in Y axis
 
   // Animation used to center the card, after finger touches card
-  AnimationController controllerCentering;
-  Tween<double> animationCenteringTween;
-  Animation<double> animationCentering;
+  late AnimationController controllerCentering;
+  late Tween<double> animationCenteringTween;
+  late Animation<double> animationCentering;
 
-  AnimationController controllerDistribution;
-  Animation<double> animationDistribution;
+  late AnimationController controllerDistribution;
+  late Animation<double> animationDistribution;
 
   //varibles used to center the card, after finger touches card
   double dx = 0;
@@ -46,84 +45,83 @@ class CardItemAlignedState extends State<CardItemAligned>
   double firstPanPositionX = 0;
   double firstPanPositionY = 0;
 
-  Vector finalPosition;
+  late Vector finalPosition;
   double endPointX = 0;
 
   Vector startPosition = new Vector(0, 0);
 
   @override
   void initState() {
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     animationTween = Tween(begin: x, end: endPointX);
     animation = animationTween
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
         ))
         .animate(controller)
-          ..addListener(() {
-            setState(() {});
-          })
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              setState(() {
-                print("Is animation" + isAnimating.toString());
-                isAnimating = false;
-                x = animation.value;
-                print(isAnimatingBeginning.toString() + y.toString());
-              });
-            }
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            print("Is animation" + isAnimating.toString());
+            isAnimating = false;
+            x = animation.value;
+            print(isAnimatingBeginning.toString() + y.toString());
           });
+        }
+      });
 
-    controllerCentering = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controllerCentering =
+        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     animationCentering = Tween<double>(begin: 0, end: 1)
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
         ))
         .animate(controllerCentering)
-          ..addListener(() {
-            setState(() {
-              dx = dxx + (37.5 - dxx) * animationCentering.value;
+      ..addListener(() {
+        setState(() {
+          dx = dxx + (37.5 - dxx) * animationCentering.value;
 
-              dy = dyy + (175 - dyy) * animationCentering.value;
+          dy = dyy + (175 - dyy) * animationCentering.value;
 
-              x = currentPanPositionX - dx;
-              y = currentPanPositionY - dy;
-            });
-          })
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              setState(() {
-                dx = 37.5;
-                dy = 175;
-              });
-            }
+          x = currentPanPositionX - dx;
+          y = currentPanPositionY - dy;
+        });
+      })
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            dx = 37.5;
+            dy = 175;
           });
+        }
+      });
 
-    controllerDistribution = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controllerDistribution =
+        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     animationDistribution = Tween<double>(begin: 0, end: 1)
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
         ))
         .animate(controllerDistribution)
-          ..addListener(() {
-            print(animationDistribution.value);
-            print(isAnimatingBeginning);
-            setState(() {});
-          })
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              setState(() {
-                x = finalPosition.x;
-                y = finalPosition.y;
+      ..addListener(() {
+        print(animationDistribution.value);
+        print(isAnimatingBeginning);
+        setState(() {});
+      })
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            x = finalPosition.x;
+            y = finalPosition.y;
 
-                print("calling");
-                isAnimatingBeginning = false;
-              });
-            }
+            print("calling");
+            isAnimatingBeginning = false;
           });
+        }
+      });
 
     isDragging = false;
     x = 0;
@@ -251,8 +249,7 @@ class CardItemAlignedState extends State<CardItemAligned>
             child: Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: ExactAssetImage('assets/images/cross-ace.png'),
-                      fit: BoxFit.contain),
+                      image: ExactAssetImage('assets/images/cross-ace.png'), fit: BoxFit.contain),
                   color: Colors.black12),
               width: double.infinity,
               height: double.infinity,

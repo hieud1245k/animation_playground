@@ -7,8 +7,8 @@ import 'package:animation_playground/widgets/cardManager.dart';
 import 'package:animation_playground/classes/player.dart';
 
 final AppModel model = AppModel();
-double screenWidth;
-double screenHeight;
+double screenWidth = 0;
+double screenHeight = 0;
 
 void main() async {
   await model.init();
@@ -16,7 +16,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   _MyAppState createState() => _MyAppState();
 }
@@ -73,7 +73,10 @@ Player player4 = Player(tablePlace: 4, avatar: "notsexy", name: "Sanzhar");
 List<Player> allPlayers = [mainPlayer, player2, player3, player4];
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
   final String title;
 
   @override

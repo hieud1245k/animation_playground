@@ -1,13 +1,17 @@
-import 'package:animation_playground/classes/cardEngine.dart';
 import 'dart:math' as math;
+
 import 'package:animation_playground/classes/vector.dart';
 import 'package:animation_playground/main.dart';
 import 'package:flutter/material.dart';
 
 class CardItem extends StatefulWidget {
-  CardItem(
-      {Key key, this.color, this.value, this.screenWidth, this.screenHeight})
-      : super(key: key);
+  CardItem({
+    Key? key,
+    required this.color,
+    required this.value,
+    required this.screenWidth,
+    required this.screenHeight,
+  }) : super(key: key);
 
   final int value;
   final Color color;
@@ -26,27 +30,27 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
   bool isAngleAnimating = false; //shows if card's angle is animating/changing
 
   // Animation used to change card location
-  AnimationController controller;
-  Tween<double> animationTween;
-  Animation<double> animation;
+  late AnimationController controller;
+  late Tween<double> animationTween;
+  late Animation<double> animation;
 
   // Animation used to center the card, after finger touches card
-  AnimationController controllerCentering;
-  Tween<double> animationCenteringTween;
-  Animation<double> animationCentering;
+  late AnimationController controllerCentering;
+  late Tween<double> animationCenteringTween;
+  late Animation<double> animationCentering;
 
   // Animation used to distribute card
-  AnimationController controllerDistribution;
-  Animation<double> animationDistribution;
+  late AnimationController controllerDistribution;
+  late Animation<double> animationDistribution;
 
   // Aniamtion used to scale card
-  AnimationController controllerScalling;
-  Tween<double> animationScallingTween;
-  Animation<double> animationScalling;
+  late AnimationController controllerScalling;
+  late Tween<double> animationScallingTween;
+  late Animation<double> animationScalling;
 
   // Animation used to change card angle
-  AnimationController controllerAngle;
-  Animation<double> animationAngle;
+  late AnimationController controllerAngle;
+  late Animation<double> animationAngle;
 
   //varibles used to center the card, after finger touches card
   double dx = 0;
@@ -54,8 +58,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
   double dxx = 0;
   double dyy = 0;
 
-  double x; //card position in X axis
-  double y; //card position in Y axis
+  double x = 0; //card position in X axis
+  double y = 0; //card position in Y axis
 
   // Current position of finger while dragging
   double currentPanPositionX = 0;
@@ -66,8 +70,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
   double firstPanPositionY = 0;
 
   // Position of card and final position
-  Vector finalPosition;
-  Vector initialPosition;
+  Vector finalPosition = Vector(0, 0);
+  Vector initialPosition = Vector(0, 0);
   Vector initialScale = Vector(75, 125);
   Vector finalScale = Vector(75, 125);
 
@@ -80,111 +84,109 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     animationTween = Tween(begin: x, end: endPointX);
     animation = animationTween
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
         ))
         .animate(controller)
-          ..addListener(() {
-            setState(() {});
-          })
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              setState(() {
-                print("Is animation" + isAnimating.toString());
-                isAnimating = false;
-                x = animation.value;
-                print(isAnimatingBeginning.toString() + y.toString());
-              });
-            }
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            print("Is animation" + isAnimating.toString());
+            isAnimating = false;
+            x = animation.value;
+            print(isAnimatingBeginning.toString() + y.toString());
           });
+        }
+      });
 
-    controllerCentering = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controllerCentering =
+        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     animationCentering = Tween<double>(begin: 0, end: 1)
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
         ))
         .animate(controllerCentering)
-          ..addListener(() {
-            setState(() {
-              dx = dxx + (initialScale.x / 2 - dxx) * animationCentering.value;
+      ..addListener(() {
+        setState(() {
+          dx = dxx + (initialScale.x / 2 - dxx) * animationCentering.value;
 
-              dy = dyy + (initialScale.y + 25 - dyy) * animationCentering.value;
-              x = currentPanPositionX - dx;
-              y = currentPanPositionY - dy;
-            });
-          })
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              setState(() {
-                dx = initialScale.x / 2;
-                dy = initialScale.y + 25;
-              });
-            }
+          dy = dyy + (initialScale.y + 25 - dyy) * animationCentering.value;
+          x = currentPanPositionX - dx;
+          y = currentPanPositionY - dy;
+        });
+      })
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            dx = initialScale.x / 2;
+            dy = initialScale.y + 25;
           });
+        }
+      });
 
-    controllerDistribution = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controllerDistribution =
+        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     animationDistribution = Tween<double>(begin: 0, end: 1)
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
         ))
         .animate(controllerDistribution)
-          ..addListener(() {
-            setState(() {});
-          })
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              setState(() {
-                x = finalPosition.x;
-                y = finalPosition.y;
-                initialPosition = finalPosition;
-                isAnimatingBeginning = false;
-              });
-            }
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            x = finalPosition.x;
+            y = finalPosition.y;
+            initialPosition = finalPosition;
+            isAnimatingBeginning = false;
           });
+        }
+      });
 
-    controllerAngle = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controllerAngle = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     animationAngle = Tween<double>(begin: 0, end: 1)
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
         ))
         .animate(controllerDistribution)
-          ..addListener(() {
-            setState(() {});
-          })
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              setState(() {
-                initialAngle = finalAngle;
-                isAngleAnimating = false;
-              });
-            }
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            initialAngle = finalAngle;
+            isAngleAnimating = false;
           });
+        }
+      });
 
-    controllerScalling = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controllerScalling =
+        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     animationScallingTween = Tween<double>(begin: 0, end: 1);
     animationScalling = animationScallingTween
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
         ))
         .animate(controllerDistribution)
-          ..addListener(() {
-            setState(() {});
-          })
-          ..addStatusListener((AnimationStatus status) {
-            if (status == AnimationStatus.completed) {
-              setState(() {
-                initialScale = finalScale;
-              });
-            }
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            initialScale = finalScale;
           });
+        }
+      });
 
     isDragging = false;
     x = 0;
@@ -304,31 +306,25 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
                 ? animation.value
                 : (isAnimatingBeginning)
                     ? initialPosition.x +
-                        (finalPosition.x - initialPosition.x) *
-                            animationDistribution.value
+                        (finalPosition.x - initialPosition.x) * animationDistribution.value
                     : x,
         top: (isDragging)
             ? y
             : (isAnimatingBeginning)
                 ? initialPosition.y +
-                    (finalPosition.y - initialPosition.y) *
-                        animationDistribution.value
+                    (finalPosition.y - initialPosition.y) * animationDistribution.value
                 : y,
         child: Transform.rotate(
           angle: (isAngleAnimating)
               ? initialAngle * (math.pi / 180) +
-                  (finalAngle - initialAngle) *
-                      animationAngle.value *
-                      (math.pi / 180)
+                  (finalAngle - initialAngle) * animationAngle.value * (math.pi / 180)
               : initialAngle * (math.pi / 180),
           child: SizedBox(
               width: (isScalling)
-                  ? initialScale.x +
-                      (finalScale.x - initialScale.x) * animationScalling.value
+                  ? initialScale.x + (finalScale.x - initialScale.x) * animationScalling.value
                   : initialScale.x,
               height: (isScalling)
-                  ? initialScale.y +
-                      (finalScale.y - initialScale.y) * animationScalling.value
+                  ? initialScale.y + (finalScale.y - initialScale.y) * animationScalling.value
                   : initialScale.y,
               child: GestureDetector(
                 onPanUpdate: (DragUpdateDetails details) {

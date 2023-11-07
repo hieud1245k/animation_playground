@@ -4,8 +4,12 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:animation_playground/models/card_manager_model.dart';
 
 class CardManager extends StatefulWidget {
-  CardManager({Key key, this.allCardKey, this.screenWidth, this.screenHight})
-      : super(key: key);
+  CardManager({
+    Key? key,
+    required this.allCardKey,
+    required this.screenWidth,
+    required this.screenHight,
+  }) : super(key: key);
   final double screenWidth;
   final double screenHight;
   final List<GlobalKey<CardItemState>> allCardKey;
@@ -37,7 +41,7 @@ class _CardManagerState extends State<CardManager> {
           (!model.distributed)
               ? Align(
                   alignment: Alignment(0, 0),
-                  child: RaisedButton(
+                  child: TextButton(
                     child: Text("Distribute"),
                     onPressed: () {
                       setState(() {

@@ -1,4 +1,4 @@
 class ScreenData {
-  static double screenHeight;
-  static double screenWidth;
+  static double screenHeight = 0;
+  static double screenWidth = 0;
 }
