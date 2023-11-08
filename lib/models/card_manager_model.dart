@@ -1,8 +1,8 @@
 //import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:animation_playground/classes/card.dart';
 import 'package:animation_playground/classes/player.dart';
+import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 /// APP MODEL
 class CardManagerModel extends Model {
@@ -32,11 +32,11 @@ class CardManagerModel extends Model {
           player.top = _screenHeight - 150;
           break;
         case 1:
-          player.left = 0;
+          player.left = 80;
           player.top = _screenHeight / 2;
           break;
         case 2:
-          player.left = 50;
+          player.left = 80;
           player.top = 30;
           break;
         case 3: //Fron player table place
@@ -44,12 +44,20 @@ class CardManagerModel extends Model {
           player.top = 15;
           break;
         case 4:
-          player.left = _screenWidth - 50;
+          player.left = _screenWidth - 80;
           player.top = 30;
           break;
         case 5:
-          player.left = _screenWidth;
+          player.left = _screenWidth - 80;
           player.top = _screenHeight / 2;
+          break;
+        case 6:
+          player.left = _screenWidth - 80;
+          player.top = _screenHeight - 150;
+          break;
+        case 7:
+          player.left = 80;
+          player.top = _screenHeight - 150;
           break;
       }
     }

@@ -1,5 +1,5 @@
-import 'package:animation_playground/classes/vector.dart';
 import 'package:animation_playground/classes/card.dart';
+import 'package:animation_playground/classes/vector.dart';
 import 'package:flutter/material.dart';
 
 class Player {
@@ -9,39 +9,42 @@ class Player {
   List<GlobalKey<CardItemState>> playerCards = [];
   double left = 0;
   double top = 0;
-  Player({required this.tablePlace, required this.avatar, required this.name});
-  get playerPosition => new Vector(left, top);
-  addCard(GlobalKey<CardItemState> newCard) {
+
+  Player({
+    required this.tablePlace,
+    required this.avatar,
+    required this.name,
+  });
+
+  Vector get playerPosition => new Vector(left, top);
+
+  void addCard(GlobalKey<CardItemState> newCard) {
     playerCards.add(newCard);
     if (tablePlace != 0) {
       switch (playerCards.length) {
         case 1:
-          newCard.currentState?.moveTo(Vector(left - 17.5 - 15, top));
-          newCard.currentState?.setAngle(15);
+          newCard.currentState?.moveTo(Vector(left - 25 - 50, top));
           break;
         case 2:
-          newCard.currentState?.moveTo(Vector(left - 17.5, top + 3));
+          newCard.currentState?.moveTo(Vector(left - 25, top));
           break;
         case 3:
-          newCard.currentState?.moveTo(Vector(left - 17.5 + 15, top));
-          newCard.currentState?.setAngle(-15);
+          newCard.currentState?.moveTo(Vector(left - 25 + 50, top));
           break;
         default:
       }
       //newCard.currentState.moveTo(playerPosition);
-      newCard.currentState?.scaleTo(Vector(35, 50));
+      newCard.currentState?.scaleTo(Vector(50, 75));
     } else {
       switch (playerCards.length) {
         case 1:
-          newCard.currentState?.moveTo(Vector(left - 80, top - 40));
-          newCard.currentState?.setAngle(-10);
+          newCard.currentState?.moveTo(Vector(left - 110, top - 50));
           break;
         case 2:
           newCard.currentState?.moveTo(Vector(left, top - 50));
           break;
         case 3:
-          newCard.currentState?.moveTo(Vector(left + 80, top - 40));
-          newCard.currentState?.setAngle(10);
+          newCard.currentState?.moveTo(Vector(left + 110, top - 50));
           break;
         default:
       }

@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:animation_playground/classes/card.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:animation_playground/models/card_manager_model.dart';
+import 'package:flutter/material.dart';
+import 'package:playing_cards/playing_cards.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class CardManager extends StatefulWidget {
   CardManager({
@@ -25,7 +26,11 @@ class _CardManagerState extends State<CardManager> {
       allCards.add(CardItem(
         key: widget.allCardKey[i],
         color: Colors.black12,
-        value: i + 1,
+        card: PlayingCard(
+          STANDARD_SUITS[
+              ((i + 1) ~/ SUITED_VALUES.length) % STANDARD_SUITS.length],
+          SUITED_VALUES[(i + 1) % SUITED_VALUES.length],
+        ),
         screenWidth: widget.screenWidth,
         screenHeight: widget.screenHight,
       ));

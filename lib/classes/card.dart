@@ -3,17 +3,18 @@ import 'dart:math' as math;
 import 'package:animation_playground/classes/vector.dart';
 import 'package:animation_playground/main.dart';
 import 'package:flutter/material.dart';
+import 'package:playing_cards/playing_cards.dart';
 
 class CardItem extends StatefulWidget {
   CardItem({
     Key? key,
     required this.color,
-    required this.value,
+    required this.card,
     required this.screenWidth,
     required this.screenHeight,
   }) : super(key: key);
 
-  final int value;
+  final PlayingCard card;
   final Color color;
   final double screenWidth;
   final double screenHeight;
@@ -84,7 +85,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+    controller = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
     animationTween = Tween(begin: x, end: endPointX);
     animation = animationTween
         .chain(new CurveTween(
@@ -105,8 +107,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
         }
       });
 
-    controllerCentering =
-        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+    controllerCentering = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
     animationCentering = Tween<double>(begin: 0, end: 1)
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
@@ -130,8 +132,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
         }
       });
 
-    controllerDistribution =
-        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+    controllerDistribution = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
     animationDistribution = Tween<double>(begin: 0, end: 1)
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
@@ -151,7 +153,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
         }
       });
 
-    controllerAngle = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+    controllerAngle = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
     animationAngle = Tween<double>(begin: 0, end: 1)
         .chain(new CurveTween(
           curve: Curves.easeOutQuad,
@@ -169,8 +172,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
         }
       });
 
-    controllerScalling =
-        AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+    controllerScalling = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
     animationScallingTween = Tween<double>(begin: 0, end: 1);
     animationScalling = animationScallingTween
         .chain(new CurveTween(
@@ -300,54 +303,60 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-        left: (isDragging)
-            ? x
-            : (isAnimating)
-                ? animation.value
-                : (isAnimatingBeginning)
-                    ? initialPosition.x +
-                        (finalPosition.x - initialPosition.x) * animationDistribution.value
-                    : x,
-        top: (isDragging)
-            ? y
-            : (isAnimatingBeginning)
-                ? initialPosition.y +
-                    (finalPosition.y - initialPosition.y) * animationDistribution.value
-                : y,
-        child: Transform.rotate(
-          angle: (isAngleAnimating)
-              ? initialAngle * (math.pi / 180) +
-                  (finalAngle - initialAngle) * animationAngle.value * (math.pi / 180)
-              : initialAngle * (math.pi / 180),
-          child: SizedBox(
-              width: (isScalling)
-                  ? initialScale.x + (finalScale.x - initialScale.x) * animationScalling.value
-                  : initialScale.x,
-              height: (isScalling)
-                  ? initialScale.y + (finalScale.y - initialScale.y) * animationScalling.value
-                  : initialScale.y,
-              child: GestureDetector(
-                onPanUpdate: (DragUpdateDetails details) {
-                  if (!isAnimating) {
-                    _onTapUpdate(details);
-                  }
-                },
-                onPanEnd: (DragEndDetails endDetails) => _onPanEnd(endDetails),
-                onPanStart: (DragStartDetails startDetails) {
-                  if (!isAnimating) {
-                    _onPanStart(startDetails);
-                  }
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: ExactAssetImage('assets/images/cross-ace.png'),
-                          fit: BoxFit.contain),
-                      color: Colors.black12),
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
-              )),
-        ));
+      left: (isDragging)
+          ? x
+          : (isAnimating)
+              ? animation.value
+              : (isAnimatingBeginning)
+                  ? initialPosition.x +
+                      (finalPosition.x - initialPosition.x) *
+                          animationDistribution.value
+                  : x,
+      top: (isDragging)
+          ? y
+          : (isAnimatingBeginning)
+              ? initialPosition.y +
+                  (finalPosition.y - initialPosition.y) *
+                      animationDistribution.value
+              : y,
+      child: Transform.rotate(
+        angle: (isAngleAnimating)
+            ? initialAngle * (math.pi / 180) +
+                (finalAngle - initialAngle) *
+                    animationAngle.value *
+                    (math.pi / 180)
+            : initialAngle * (math.pi / 180),
+        child: SizedBox(
+          width: (isScalling)
+              ? initialScale.x +
+                  (finalScale.x - initialScale.x) * animationScalling.value
+              : initialScale.x,
+          height: (isScalling)
+              ? initialScale.y +
+                  (finalScale.y - initialScale.y) * animationScalling.value
+              : initialScale.y,
+          child: GestureDetector(
+            onPanUpdate: (DragUpdateDetails details) {
+              if (!isAnimating) {
+                _onTapUpdate(details);
+              }
+            },
+            onPanEnd: (DragEndDetails endDetails) => _onPanEnd(endDetails),
+            onPanStart: (DragStartDetails startDetails) {
+              if (!isAnimating) {
+                _onPanStart(startDetails);
+              }
+            },
+            child: PlayingCardView(
+              showBack: true,
+              card: widget.card,
+              shape: Border.all(
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
