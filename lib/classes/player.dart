@@ -49,7 +49,6 @@ class Player {
         default:
       }
       //newCard.currentState.moveTo(playerPosition);
-      newCard.currentState?.setDraggable = true;
       newCard.currentState?.scaleTo(Vector(100, 142.8));
     }
   }

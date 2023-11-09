@@ -70,7 +70,7 @@ class CardManagerModel extends Model {
   Future distribute() async {
     for (var i = 0; i < allCards.length; i++) {
       players[i % players.length].addCard(allCards[i]);
-      await Future.delayed(Duration(milliseconds: 300));
+      await Future.delayed(Duration(milliseconds: 200));
     }
     notifyListeners();
   }

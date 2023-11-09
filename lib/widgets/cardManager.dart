@@ -5,15 +5,13 @@ import 'package:playing_cards/playing_cards.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class CardManager extends StatefulWidget {
+  final List<GlobalKey<CardItemState>> allCardKey;
+
   CardManager({
     Key? key,
     required this.allCardKey,
-    required this.screenWidth,
-    required this.screenHight,
   }) : super(key: key);
-  final double screenWidth;
-  final double screenHight;
-  final List<GlobalKey<CardItemState>> allCardKey;
+
   _CardManagerState createState() => _CardManagerState();
 }
 
@@ -23,17 +21,17 @@ class _CardManagerState extends State<CardManager> {
   void initState() {
     for (var i = 0; i < widget.allCardKey.length; i++) {
       print(i);
-      allCards.add(CardItem(
-        key: widget.allCardKey[i],
-        color: Colors.black12,
-        card: PlayingCard(
-          STANDARD_SUITS[
-              ((i + 1) ~/ SUITED_VALUES.length) % STANDARD_SUITS.length],
-          SUITED_VALUES[(i + 1) % SUITED_VALUES.length],
+      allCards.add(
+        CardItem(
+          key: widget.allCardKey[i],
+          color: Colors.black12,
+          card: PlayingCard(
+            STANDARD_SUITS[
+                ((i + 1) ~/ SUITED_VALUES.length) % STANDARD_SUITS.length],
+            SUITED_VALUES[(i + 1) % SUITED_VALUES.length],
+          ),
         ),
-        screenWidth: widget.screenWidth,
-        screenHeight: widget.screenHight,
-      ));
+      );
     }
     super.initState();
   }
@@ -47,7 +45,14 @@ class _CardManagerState extends State<CardManager> {
               ? Align(
                   alignment: Alignment(0, 0),
                   child: TextButton(
-                    child: Text("Distribute"),
+                    child: Text(
+                      "Start",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
+                    ),
                     onPressed: () {
                       setState(() {
                         model.distributed = true;
@@ -57,24 +62,6 @@ class _CardManagerState extends State<CardManager> {
                   ),
                 )
               : Text("distributed"),
-          Align(
-            alignment: Alignment(0, 0.25),
-            child: SizedBox(
-              width: 75,
-              height: 125,
-              child: Container(
-                decoration: BoxDecoration(color: Colors.black12),
-                width: double.infinity,
-                height: double.infinity,
-                child: Center(
-                  child: Text(
-                    "there will be placed user card",
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
-          ),
           Stack(
             children: allCards,
           )

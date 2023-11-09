@@ -89,8 +89,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               ),
             child: CardManager(
               allCardKey: allC,
-              screenHight: screenHeight,
-              screenWidth: screenWidth,
             ),
           ),
         ),
