@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:animation_playground/classes/vector.dart';
 import 'package:animation_playground/main.dart';
+import 'package:flip_card/flip_card.dart';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 
@@ -43,6 +45,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
   late AnimationController controllerAngle;
   late Animation<double> animationAngle;
 
+  late FlipCardController flipCardController;
+
   //varibles used to center the card, after finger touches card
   double dx = 0;
   double dy = 0;
@@ -67,6 +71,8 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
   // Rotation/Angle of card
   double initialAngle = 0;
   double finalAngle = 0;
+
+  bool canOpen = false;
 
   @override
   void initState() {
@@ -162,7 +168,7 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
     y = (screenHeight * 0.75) - initialScale.x;
     initialPosition = Vector(x, y);
     initialScale = Vector(75, 125);
-
+    flipCardController = FlipCardController();
     super.initState();
   }
 
@@ -173,6 +179,7 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
     controllerCentering.dispose();
     controllerDistribution.dispose();
     controllerScalling.dispose();
+    flipCardController.controller?.dispose();
     super.dispose();
   }
 
@@ -237,16 +244,35 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
                   (finalScale.y - initialScale.y) * animationScalling.value
               : initialScale.y,
           child: GestureDetector(
-            child: PlayingCardView(
-              showBack: true,
-              card: widget.card,
-              shape: Border.all(
-                color: Colors.grey,
+            onTap: openCard,
+            child: FlipCard(
+              controller: flipCardController,
+              flipOnTouch: false,
+              side: CardSide.BACK,
+              front: _buildCardView(),
+              back: _buildCardView(
+                showBack: true,
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildCardView({bool showBack = false}) {
+    return PlayingCardView(
+      showBack: showBack,
+      card: widget.card,
+      shape: Border.all(
+        color: Colors.grey,
+      ),
+    );
+  }
+
+  void openCard() {
+    if (canOpen && flipCardController.state?.isFront != true) {
+      flipCardController.toggleCard();
+    }
   }
 }

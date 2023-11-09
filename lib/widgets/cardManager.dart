@@ -20,7 +20,6 @@ class _CardManagerState extends State<CardManager> {
   @override
   void initState() {
     for (var i = 0; i < widget.allCardKey.length; i++) {
-      print(i);
       allCards.add(
         CardItem(
           key: widget.allCardKey[i],

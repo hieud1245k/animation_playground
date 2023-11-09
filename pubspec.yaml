@@ -31,6 +31,7 @@ dependencies:
   sqflite: ^2.3.0
   path_provider: ^2.1.1
   playing_cards: ^0.4.1+11
+  flip_card: ^0.7.0
 
 dev_dependencies:
   flutter_test:

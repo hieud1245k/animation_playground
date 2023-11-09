@@ -69,9 +69,11 @@ class CardManagerModel extends Model {
 
   Future distribute() async {
     for (var i = 0; i < allCards.length; i++) {
-      players[i % players.length].addCard(allCards[i]);
+      var player = players[i % players.length];
+      var card = allCards[i];
+      card.currentState?.canOpen = player.tablePlace == 0;
+      player.addCard(card);
       await Future.delayed(Duration(milliseconds: 200));
     }
-    notifyListeners();
   }
 }
