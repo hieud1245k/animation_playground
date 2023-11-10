@@ -79,16 +79,24 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       model: model,
       child: ScopedModelDescendant<AppModel>(
         builder: (context, child, model) => Scaffold(
-          body: ScopedModel<CardManagerModel>(
-            model: CardManagerModel()
-              ..init(
-                allC: allC,
-                allPlayers: allPlayers,
-                screenHeight: screenHeight,
-                screenWidth: screenWidth,
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/bg_card_game.png'),
+                fit: BoxFit.fill,
               ),
-            child: CardManager(
-              allCardKey: allC,
+            ),
+            child: ScopedModel<CardManagerModel>(
+              model: CardManagerModel()
+                ..init(
+                  allC: allC,
+                  allPlayers: allPlayers,
+                  screenHeight: screenHeight,
+                  screenWidth: screenWidth,
+                ),
+              child: CardManager(
+                allCardKey: allC,
+              ),
             ),
           ),
         ),

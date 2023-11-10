@@ -40,27 +40,26 @@ class _CardManagerState extends State<CardManager> {
     return ScopedModelDescendant<CardManagerModel>(
       builder: (context, child, model) => Stack(
         children: <Widget>[
-          (!model.distributed)
-              ? Align(
-                  alignment: Alignment(0, 0),
-                  child: TextButton(
-                    child: Text(
-                      "Start",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        model.distributed = true;
-                      });
-                      model.distribute();
-                    },
+          if (!model.distributed)
+            Align(
+              alignment: Alignment(0, 0),
+              child: TextButton(
+                child: Text(
+                  "Start",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.blueAccent,
                   ),
-                )
-              : Text("distributed"),
+                ),
+                onPressed: () {
+                  setState(() {
+                    model.distributed = true;
+                  });
+                  model.distribute();
+                },
+              ),
+            ),
           Stack(
             children: allCards,
           )
