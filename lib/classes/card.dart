@@ -244,7 +244,9 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
                   (finalScale.y - initialScale.y) * animationScalling.value
               : initialScale.y,
           child: GestureDetector(
-            onTap: openCard,
+            onTap: () {
+              if (canOpen) openCard();
+            },
             child: FlipCard(
               controller: flipCardController,
               flipOnTouch: false,
@@ -271,7 +273,7 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
   }
 
   void openCard() {
-    if (canOpen && flipCardController.state?.isFront != true) {
+    if (flipCardController.state?.isFront != true) {
       flipCardController.toggleCard();
     }
   }

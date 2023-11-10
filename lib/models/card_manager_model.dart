@@ -73,9 +73,11 @@ class CardManagerModel extends Model {
       player.addCard(card);
       await Future.delayed(Duration(milliseconds: 200));
     }
-    for (var card in players[0].playerCards) {
-      await Future.delayed(Duration(milliseconds: 500));
-      card.currentState?.openCard();
+    for (var i = 0; i < players.length; i++) {
+      for (var card in players[i].playerCards) {
+        await Future.delayed(Duration(milliseconds: i == 0 ? 500 : 200));
+        card.currentState?.openCard();
+      }
     }
   }
 }
