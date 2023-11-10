@@ -2,6 +2,7 @@ import 'package:animation_playground/classes/card.dart';
 import 'package:animation_playground/classes/player.dart';
 import 'package:animation_playground/models/app_model.dart';
 import 'package:animation_playground/models/card_manager_model.dart';
+import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/widgets/cardManager.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -42,7 +43,7 @@ Player player3 = Player(tablePlace: 3, avatar: "notsexy", name: "Sundet");
 Player player4 = Player(tablePlace: 4, avatar: "notsexy", name: "Sanzhar");
 
 List<Player> allPlayers = List.generate(
-  8,
+  6,
   (index) => Player(
     tablePlace: index,
     avatar: "notsexy",
@@ -78,14 +79,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return ScopedModel<AppModel>(
       model: model,
       child: ScopedModelDescendant<AppModel>(
-        builder: (context, child, model) => Scaffold(
-          body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/bg_card_game.png'),
-                fit: BoxFit.fill,
-              ),
-            ),
+        builder: (context, child, model) {
+          return BasePage(
             child: ScopedModel<CardManagerModel>(
               model: CardManagerModel()
                 ..init(
@@ -98,8 +93,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 allCardKey: allC,
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

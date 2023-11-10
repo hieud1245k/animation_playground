@@ -63,17 +63,19 @@ class CardManagerModel extends Model {
     }
     //LocalShuffling card
     allC.shuffle();
-
-    notifyListeners();
   }
 
   Future distribute() async {
-    for (var i = 0; i < allCards.length; i++) {
+    for (var i = 0; i < players.length * 3; i++) {
       var player = players[i % players.length];
       var card = allCards[i];
       card.currentState?.canOpen = player.tablePlace == 0;
       player.addCard(card);
       await Future.delayed(Duration(milliseconds: 200));
+    }
+    for (var card in players[0].playerCards) {
+      await Future.delayed(Duration(milliseconds: 500));
+      card.currentState?.openCard();
     }
   }
 }

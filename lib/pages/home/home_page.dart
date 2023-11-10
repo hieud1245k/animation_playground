@@ -1,5 +1,4 @@
-import 'package:animation_playground/classes/card.dart';
-import 'package:animation_playground/classes/player.dart';
+import 'package:animation_playground/pages/base_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,30 +9,71 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late List<CardItem> allCards;
-  late List<Player> players;
-
   @override
   void initState() {
-    allCards = [];
-    players = [];
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
+    return BasePage(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Align(
-            alignment: Alignment(0, -0.2),
-            child: TextButton(
-              child: Text("Distribute"),
-              onPressed: () {},
+          Container(
+            width: 400,
+            padding: EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(24)),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.transparent.withOpacity(0.25),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
             ),
-          ),
-          Stack(
-            children: allCards,
+            child: Column(
+              children: [
+                Text(
+                  "Online Scratch Cards",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+                const SizedBox(height: 48),
+                TextFormField(
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: "Input name",
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.green,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text("Submit"),
+                ),
+              ],
+            ),
           ),
         ],
       ),
