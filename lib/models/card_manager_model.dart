@@ -69,15 +69,20 @@ class CardManagerModel extends Model {
     for (var i = 0; i < players.length * 3; i++) {
       var player = players[i % players.length];
       var card = allCards[i];
-      card.currentState?.canOpen = player.tablePlace == 0;
       player.addCard(card);
       await Future.delayed(Duration(milliseconds: 200));
     }
-    for (var i = 0; i < players.length; i++) {
-      for (var card in players[i].playerCards) {
-        await Future.delayed(Duration(milliseconds: i == 0 ? 500 : 200));
-        card.currentState?.openCard();
-      }
-    }
+    players
+        .firstWhere((element) => element.tablePlace == 0)
+        .playerCards
+        .forEach((element) {
+      element.currentState?.canOpen = true;
+    });
+    // for (var i = 0; i < players.length; i++) {
+    //   for (var card in players[i].playerCards) {
+    //     await Future.delayed(Duration(milliseconds: i == 0 ? 500 : 200));
+    //     card.currentState?.openCard();
+    //   }
+    // }
   }
 }
