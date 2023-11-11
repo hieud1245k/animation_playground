@@ -1,5 +1,6 @@
 import 'package:animation_playground/classes/card.dart';
 import 'package:animation_playground/models/card_manager_model.dart';
+import 'package:animation_playground/widgets/player_item.dart';
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -40,29 +41,40 @@ class _CardManagerState extends State<CardManager> {
     return ScopedModelDescendant<CardManagerModel>(
       builder: (context, child, model) => Stack(
         children: <Widget>[
-          if (!model.distributed)
-            Align(
-              alignment: Alignment(0, 0),
-              child: TextButton(
-                child: Text(
-                  "Start",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.blueAccent,
+          Align(
+            alignment: Alignment(0, 0),
+            child: model.distributed
+                ? Text(
+                    "Tap to open the cards",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  )
+                : ElevatedButton(
+                    child: Text(
+                      "Start",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        model.distributed = true;
+                      });
+                      model.distribute();
+                    },
                   ),
-                ),
-                onPressed: () {
-                  setState(() {
-                    model.distributed = true;
-                  });
-                  model.distribute();
-                },
-              ),
-            ),
+          ),
           Stack(
             children: allCards,
-          )
+          ),
+          Stack(
+            children: model.players.map((e) => PlayerItem(player: e)).toList(),
+          ),
         ],
       ),
     );

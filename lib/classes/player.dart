@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 class Player {
   final int tablePlace;
-  final String avatar;
   final String name;
   List<GlobalKey<CardItemState>> playerCards = [];
   double left = 0;
@@ -12,7 +11,6 @@ class Player {
 
   Player({
     required this.tablePlace,
-    required this.avatar,
     required this.name,
   });
 
@@ -50,6 +48,33 @@ class Player {
       }
       //newCard.currentState.moveTo(playerPosition);
       newCard.currentState?.scaleTo(Vector(100, 142.8));
+    }
+  }
+
+  double get itemLeft {
+    switch (tablePlace) {
+      case 0:
+        return left + 220;
+      case 1:
+      case 2:
+        return left - 60;
+      case 3:
+        return left + 80;
+      default:
+        return left;
+    }
+  }
+
+  double get itemTop {
+    switch (tablePlace) {
+      case 1:
+      case 5:
+        return top - 80;
+      case 2:
+      case 4:
+        return top + 80;
+      default:
+        return top;
     }
   }
 }
