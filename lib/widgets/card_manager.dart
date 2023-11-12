@@ -45,7 +45,7 @@ class _CardManagerState extends State<CardManager> {
             alignment: Alignment(0, 0),
             child: model.distributed
                 ? Text(
-                    "Tap to open the cards",
+                    "Click on the card to open it",
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 18,

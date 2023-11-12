@@ -77,4 +77,9 @@ class Player {
         return top;
     }
   }
+
+  Map<String, dynamic> get params => {
+        "name": name,
+        "table_place": tablePlace,
+      };
 }
