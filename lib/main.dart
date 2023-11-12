@@ -1,6 +1,7 @@
 import 'package:animation_playground/classes/card.dart';
 import 'package:animation_playground/classes/player.dart';
 import 'package:animation_playground/core/common/extensions/context_extensions.dart';
+import 'package:animation_playground/core/config/build_config.dart';
 import 'package:animation_playground/models/card_manager_model.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/widgets/card_manager.dart';
@@ -11,6 +12,7 @@ double screenWidth = 0;
 double screenHeight = 0;
 
 void main() async {
+  BuildConfig.ensureInitialized(Environment.LOCAL);
   runApp(MyApp());
 }
 
