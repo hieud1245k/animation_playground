@@ -1,3 +1,6 @@
+import 'package:animation_playground/core/common/utils/app_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 enum Environment {
   LOCAL,
   DEV,
@@ -21,7 +24,8 @@ class BuildConfig {
 
   BuildConfig._();
 
-  static ensureInitialized(Environment environment) {
+  static Future ensureInitialized(Environment environment) async {
     instance.environment = environment;
+    AppPreferences.instance = await SharedPreferences.getInstance();
   }
 }

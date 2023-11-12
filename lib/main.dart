@@ -4,6 +4,7 @@ import 'package:animation_playground/core/common/extensions/context_extensions.d
 import 'package:animation_playground/core/config/build_config.dart';
 import 'package:animation_playground/models/card_manager_model.dart';
 import 'package:animation_playground/pages/base_page.dart';
+import 'package:animation_playground/pages/my_application.dart';
 import 'package:animation_playground/widgets/card_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -13,7 +14,7 @@ double screenHeight = 0;
 
 void main() async {
   BuildConfig.ensureInitialized(Environment.LOCAL);
-  runApp(MyApp());
+  runApp(MyApplication());
 }
 
 class MyApp extends StatefulWidget {

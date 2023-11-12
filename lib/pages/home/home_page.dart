@@ -1,4 +1,5 @@
 import 'package:animation_playground/pages/base_page.dart';
+import 'package:animation_playground/pages/room/room_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -35,47 +36,61 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                Text(
-                  "Online Scratch Cards",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.blueAccent,
-                  ),
-                ),
-                const SizedBox(height: 48),
-                TextFormField(
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: "Input name",
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.grey,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.green,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text("Submit"),
-                ),
-              ],
-            ),
+            child: buildForm(),
           ),
         ],
+      ),
+    );
+  }
+
+  Column buildForm() {
+    return Column(
+      children: [
+        Text(
+          "Online Scratch Cards",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Colors.blueAccent,
+          ),
+        ),
+        const SizedBox(height: 48),
+        TextFormField(
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+          decoration: InputDecoration(
+            hintText: "Input name",
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.green,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        ElevatedButton(
+          onPressed: goToRoomPage,
+          child: Text("Submit"),
+        ),
+      ],
+    );
+  }
+
+  void goToRoomPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return RoomPage();
+        },
       ),
     );
   }
