@@ -3,7 +3,8 @@ import 'package:animation_playground/core/common/utils/app_preferences.dart';
 import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
+import '../main.dart';
 
 class MyApplication extends StatefulWidget {
   const MyApplication({super.key});
@@ -28,21 +29,25 @@ class _MyApplicationState extends State<MyApplication> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider<bool>(
-        create: (context) => true,
-        builder: (context, child) {
-          return HomePage();
+      home: StreamBuilder(
+        stream: streamController.stream,
+        builder: (context, snapshot) {
+          switch (snapshot.data) {
+            case ConnectState.SUCCESS:
+              return _buildContent();
+            default:
+              return Center(
+                child: const CircularProgressIndicator(),
+              );
+          }
         },
       ),
     );
   }
 
   Widget _buildContent() {
-    String? playerName = AppPreferences.instance.getString("player_name");
-    if (playerName == null) {
-      return HomePage();
-    }
-
-    return HomePage();
+    return HomePage(
+      playerName: AppPreferences.instance.getString("player_name") ?? "",
+    );
   }
 }

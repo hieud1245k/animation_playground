@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animation_playground/classes/card.dart';
 import 'package:animation_playground/classes/player.dart';
 import 'package:animation_playground/core/common/extensions/context_extensions.dart';
@@ -19,6 +21,8 @@ import 'core/common/utils/app_preferences.dart';
 double screenWidth = 0;
 double screenHeight = 0;
 
+final streamController = StreamController<ConnectState>();
+
 void onConnect(StompFrame frame) {
   print("Connect successful!");
   stompClient.subscribe(
@@ -38,19 +42,32 @@ void onConnect(StompFrame frame) {
 
 final stompClient = StompClient(
   config: StompConfig(
-    url: 'ws://192.168.0.29:8080/ws',
-    onConnect: onConnect,
+    url: 'ws://localhost:8080/ws',
+    onConnect: (p0) {
+      streamController.sink.add(ConnectState.SUCCESS);
+      print("Connect successful!");
+    },
     beforeConnect: () async {
+      streamController.sink.add(ConnectState.IN_PROGRESS);
       print('connecting...');
     },
     onDisconnect: (p0) {
+      streamController.sink.add(ConnectState.DISCONNECT);
       print("onDisconnect");
     },
     onWebSocketError: (dynamic error) {
-      print(error);
+      streamController.add(ConnectState.ERROR);
+      print("onWebSocketError $error");
     },
   ),
 );
+
+enum ConnectState {
+  IN_PROGRESS,
+  ERROR,
+  SUCCESS,
+  DISCONNECT;
+}
 
 void main() async {
   await BuildConfig.ensureInitialized(Environment.LOCAL);

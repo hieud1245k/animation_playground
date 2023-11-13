@@ -1,19 +1,65 @@
+import 'dart:convert';
+
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/common/utils/app_preferences.dart';
+import '../../data/models/player_model.dart';
 import '../../main.dart';
+import '../room/room_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String playerName;
+
+  const HomePage({
+    super.key,
+    this.playerName = "",
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  late TextEditingController _nameController;
+
   @override
   void initState() {
+    _nameController = TextEditingController()..text = widget.playerName;
+    stompClient.subscribe(
+      destination: "/queue/player/success",
+      callback: (frame) async {
+        print("success ${frame.body}");
+        final playerModel = PlayerModel.fromJson(jsonDecode(frame.body ?? ""));
+        await AppPreferences.instance.setString(
+          "player_name",
+          playerModel.name,
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => RoomPage(
+              playerModel: playerModel,
+            ),
+          ),
+        );
+      },
+    );
+    stompClient.subscribe(
+      destination: "/queue/player/failed",
+      callback: (frame) {
+        print("po ${frame.body}");
+      },
+    );
+    if (widget.playerName.isNotEmpty) {
+      sendPlayerName();
+    }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -57,6 +103,7 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 48),
         TextFormField(
+          controller: _nameController,
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 16,
@@ -79,18 +126,22 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 24),
         ElevatedButton(
-          onPressed: goToRoomPage,
+          onPressed: sendPlayerName,
           child: Text("Submit"),
         ),
       ],
     );
   }
 
-  void goToRoomPage() {
+  void sendPlayerName() {
+    final playerName = _nameController.text;
+    if (playerName.length < 4) {
+      return;
+    }
     if (stompClient.connected) {
       stompClient.send(
         destination: "/app/add-player",
-        body: "User name 1",
+        body: playerName,
       );
     }
   }
