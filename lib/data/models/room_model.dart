@@ -8,4 +8,12 @@ class RoomModel extends BaseModel {
     required super.id,
     required this.playerModels,
   });
+
+  factory RoomModel.fromJson(Map? json) {
+    final playerJson = json?["playerDTOs"] as List? ?? [];
+    return RoomModel(
+      id: json?["id"],
+      playerModels: playerJson.map((e) => PlayerModel.fromJson(e)).toList(),
+    );
+  }
 }
