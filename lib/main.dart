@@ -2,18 +2,63 @@ import 'package:animation_playground/classes/card.dart';
 import 'package:animation_playground/classes/player.dart';
 import 'package:animation_playground/core/common/extensions/context_extensions.dart';
 import 'package:animation_playground/core/config/build_config.dart';
+import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/models/card_manager_model.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/pages/my_application.dart';
 import 'package:animation_playground/widgets/card_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
+
+import 'core/common/utils/app_preferences.dart';
 
 double screenWidth = 0;
 double screenHeight = 0;
 
+void onConnect(StompFrame frame) {
+  print("Connect successful!");
+  stompClient.subscribe(
+    destination: "/queue/player/success",
+    callback: (p0) {
+      print("po ${p0.body}");
+    },
+  );
+
+  stompClient.subscribe(
+    destination: "/queue/player/failed",
+    callback: (p1) {
+      print("po ${p1.body}");
+    },
+  );
+}
+
+final stompClient = StompClient(
+  config: StompConfig(
+    url: 'ws://192.168.0.29:8080/ws',
+    onConnect: onConnect,
+    beforeConnect: () async {
+      print('connecting...');
+    },
+    onDisconnect: (p0) {
+      print("onDisconnect");
+    },
+    onWebSocketError: (dynamic error) {
+      print(error);
+    },
+  ),
+);
+
 void main() async {
-  BuildConfig.ensureInitialized(Environment.LOCAL);
+  await BuildConfig.ensureInitialized(Environment.LOCAL);
+  AppPreferences.instance = await SharedPreferences.getInstance();
+  await configureDependencies();
+
+  stompClient.activate();
+
   runApp(MyApplication());
 }
 

@@ -1,6 +1,7 @@
 import 'package:animation_playground/pages/base_page.dart';
-import 'package:animation_playground/pages/room/room_page.dart';
 import 'package:flutter/material.dart';
+
+import '../../main.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -86,12 +87,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void goToRoomPage() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return RoomPage();
-        },
-      ),
-    );
+    if (stompClient.connected) {
+      stompClient.send(
+        destination: "/app/add-player",
+        body: "User name 1",
+      );
+    }
   }
 }
