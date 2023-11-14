@@ -42,7 +42,7 @@ void onConnect(StompFrame frame) {
 
 final stompClient = StompClient(
   config: StompConfig(
-    url: 'ws://localhost:8080/ws',
+    url: 'ws://localhost:8090/ws',
     onConnect: (p0) {
       streamController.sink.add(ConnectState.SUCCESS);
       print("Connect successful!");
@@ -70,6 +70,7 @@ enum ConnectState {
 }
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await BuildConfig.ensureInitialized(Environment.LOCAL);
   AppPreferences.instance = await SharedPreferences.getInstance();
   await configureDependencies();

@@ -5,6 +5,9 @@ import 'package:dio/dio.dart';
 const _kDefaultConnectTimeout = Duration.millisecondsPerMinute;
 const _kDefaultReceiveTimeout = Duration.millisecondsPerMinute;
 
+// Resolve XMLRequest error
+// adb reverse tcp:8090 tcp:8090
+
 class DioService {
   final String baseUrl;
   final Dio _dio;

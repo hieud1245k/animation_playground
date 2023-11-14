@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
           "player_name",
           playerModel.name,
         );
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => RoomPage(
               playerModel: playerModel,

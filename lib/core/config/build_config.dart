@@ -7,7 +7,7 @@ enum Environment {
   String get url {
     switch (this) {
       case LOCAL:
-        return "http://192.168.0.29:8080/";
+        return "http://127.0.0.1:8090";
       default:
         return "";
     }

@@ -9,11 +9,15 @@ abstract class RoomRemoteDataSource {
 class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
   final DioService _dioService;
 
-  RoomRemoteDataSourceImpl() : _dioService = getIt();
+  RoomRemoteDataSourceImpl() : _dioService = getIt<DioService>();
 
   @override
   Future<List<RoomModel>> getAll() async {
-    final response = await _dioService.get("api/rooms/");
+    final response = await _dioService.get(
+      "/api/rooms/",
+      queryParameters: {},
+    );
+    print(response);
     if (response is List) {
       return response.map((e) => RoomModel.fromJson(e)).toList();
     }
