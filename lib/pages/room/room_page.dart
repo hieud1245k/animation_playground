@@ -3,6 +3,7 @@ import 'package:animation_playground/blocs/room/room_bloc.dart';
 import 'package:animation_playground/blocs/room/room_state.dart';
 import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/pages/base_page.dart';
+import 'package:animation_playground/pages/manager/card_manager_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -58,8 +59,27 @@ class _RoomPageState extends State<RoomPage> {
                     itemCount: state.rooms.length,
                     itemBuilder: (context, index) {
                       final room = state.rooms[index];
-                      return ListTile(
-                        title: Text("Room id: ${room.id}"),
+                      return InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return CardManagerPage(
+                                  mainPlayer: widget.playerModel,
+                                  room: room,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text("Room id: ${room.id}"),
+                            ),
+                            Divider(height: 1),
+                          ],
+                        ),
                       );
                     },
                   );
