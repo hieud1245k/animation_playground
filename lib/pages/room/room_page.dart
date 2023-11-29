@@ -46,8 +46,38 @@ class _RoomPageState extends State<RoomPage> {
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            child: BlocBuilder(
+            child: BlocConsumer(
               bloc: _roomBloc,
+              listener: (context, state) {
+                if (state is CreateNewRoomSuccess) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return CardManagerPage(
+                            mainPlayer: widget.playerModel, room: state.room);
+                      },
+                    ),
+                  ).then((_) {
+                    _roomBloc.getRooms();
+                  });
+                }
+                if (state is JoinRoomSuccess) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return CardManagerPage(
+                            mainPlayer: widget.playerModel, room: state.room);
+                      },
+                    ),
+                  ).then((_) {
+                    _roomBloc.getRooms();
+                  });
+                }
+              },
+              buildWhen: (previous, current) {
+                return current is GetRoomsSuccess ||
+                    previous is InitializedState && current is InProgressState;
+              },
               builder: (context, state) {
                 if (state is InProgressState) {
                   return Center(
@@ -55,22 +85,18 @@ class _RoomPageState extends State<RoomPage> {
                   );
                 }
                 if (state is GetRoomsSuccess) {
+                  if (state.rooms.isEmpty) {
+                    return Center(
+                      child: Text("No rooms."),
+                    );
+                  }
                   return ListView.builder(
                     itemCount: state.rooms.length,
                     itemBuilder: (context, index) {
                       final room = state.rooms[index];
                       return InkWell(
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return CardManagerPage(
-                                  mainPlayer: widget.playerModel,
-                                  room: room,
-                                );
-                              },
-                            ),
-                          );
+                          _roomBloc.joinRoom(widget.playerModel.id, room.id);
                         },
                         child: Column(
                           children: [
@@ -136,22 +162,29 @@ class _RoomPageState extends State<RoomPage> {
                 width: 1,
               ),
             ),
-            child: Row(
-              children: [
-                Icon(Icons.add),
-                const SizedBox(width: 4),
-                Text(
-                  "Create room",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+            child: InkWell(
+              onTap: createNewRoom,
+              child: Row(
+                children: [
+                  Icon(Icons.add),
+                  const SizedBox(width: 4),
+                  Text(
+                    "Create room",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void createNewRoom() {
+    _roomBloc.createNew(widget.playerModel.id);
   }
 }

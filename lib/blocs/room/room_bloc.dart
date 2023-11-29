@@ -13,4 +13,23 @@ class RoomBloc extends BaseBloc with SingleBlocMixin {
       onSuccess: (data) => GetRoomsSuccess(rooms: data),
     );
   }
+
+  void createNew(playerId) {
+    print("createNew");
+    single(
+      () => _repository.createNew(playerId),
+      onSuccess: (data) => CreateNewRoomSuccess(room: data),
+    );
+  }
+
+  Future leaveRoom(playerId, roomId) {
+    return _repository.leaveRoom(playerId, roomId);
+  }
+
+  void joinRoom(playerId, roomId) {
+    single(
+      () => _repository.joinRoom(playerId, roomId),
+      onSuccess: (data) => JoinRoomSuccess(room: data),
+    );
+  }
 }

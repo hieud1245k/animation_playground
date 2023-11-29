@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:animation_playground/core/common/utils/utils.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:flutter/material.dart';
 
@@ -26,30 +27,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _nameController = TextEditingController()..text = widget.playerName;
-    stompClient.subscribe(
-      destination: "/queue/player/success",
-      callback: (frame) async {
-        print("success ${frame.body}");
-        final playerModel = PlayerModel.fromJson(jsonDecode(frame.body ?? ""));
-        await AppPreferences.instance.setString(
-          "player_name",
-          playerModel.name,
-        );
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => RoomPage(
-              playerModel: playerModel,
-            ),
-          ),
-        );
-      },
-    );
-    stompClient.subscribe(
-      destination: "/queue/player/failed",
-      callback: (frame) {
-        print("po ${frame.body}");
-      },
-    );
     if (widget.playerName.isNotEmpty) {
       sendPlayerName();
     }
@@ -138,6 +115,31 @@ class _HomePageState extends State<HomePage> {
     if (playerName.length < 4) {
       return;
     }
+    String path = "/specific/player/${Utils.convertNameToPath(playerName)}";
+    stompClient.subscribe(
+      destination: "$path/success",
+      callback: (frame) async {
+        print("success ${frame.body}");
+        final playerModel = PlayerModel.fromJson(jsonDecode(frame.body ?? ""));
+        await AppPreferences.instance.setString(
+          "player_name",
+          playerModel.name,
+        );
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => RoomPage(
+              playerModel: playerModel,
+            ),
+          ),
+        );
+      },
+    );
+    stompClient.subscribe(
+      destination: "$path/failed",
+      callback: (frame) {
+        print("po ${frame.body}");
+      },
+    );
     if (stompClient.connected) {
       stompClient.send(
         destination: "/app/add-player",

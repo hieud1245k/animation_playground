@@ -8,3 +8,27 @@ class GetRoomsSuccess extends BaseState {
     required this.rooms,
   });
 }
+
+class CreateNewRoomSuccess extends BaseState {
+  final RoomModel room;
+
+  CreateNewRoomSuccess({
+    required this.room,
+  });
+}
+
+class LeaveRoomSuccess extends BaseState {
+  final RoomModel room;
+
+  LeaveRoomSuccess({
+    required this.room,
+  });
+}
+
+class JoinRoomSuccess extends BaseState {
+  final RoomModel room;
+
+  JoinRoomSuccess({
+    required this.room,
+  });
+}

@@ -38,8 +38,10 @@ mixin SingleBlocMixin on BaseBloc {
       T data = await action();
       emit(onSuccess(data));
     } on BaseException catch (exception) {
+      print(exception.message);
       emit(ErrorState(exception));
     } catch (error) {
+      print(error);
       emit(ErrorState(LocalException(message: error.toString())));
     }
   }
