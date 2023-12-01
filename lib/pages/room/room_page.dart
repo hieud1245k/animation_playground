@@ -1,6 +1,8 @@
 import 'package:animation_playground/blocs/blocs.dart';
 import 'package:animation_playground/blocs/room/room_bloc.dart';
 import 'package:animation_playground/blocs/room/room_state.dart';
+import 'package:animation_playground/core/common/constants/app_contants.dart';
+import 'package:animation_playground/data/models/room_model.dart';
 import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/pages/manager/card_manager_page.dart';
@@ -50,28 +52,10 @@ class _RoomPageState extends State<RoomPage> {
               bloc: _roomBloc,
               listener: (context, state) {
                 if (state is CreateNewRoomSuccess) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return CardManagerPage(
-                            mainPlayer: widget.playerModel, room: state.room);
-                      },
-                    ),
-                  ).then((_) {
-                    _roomBloc.getRooms();
-                  });
+                  goToCardManager(state.room);
                 }
                 if (state is JoinRoomSuccess) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return CardManagerPage(
-                            mainPlayer: widget.playerModel, room: state.room);
-                      },
-                    ),
-                  ).then((_) {
-                    _roomBloc.getRooms();
-                  });
+                  goToCardManager(state.room);
                 }
               },
               buildWhen: (previous, current) {
@@ -101,7 +85,20 @@ class _RoomPageState extends State<RoomPage> {
                         child: Column(
                           children: [
                             ListTile(
-                              title: Text("Room id: ${room.id}"),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Room id: ${room.id}"),
+                                  Text(
+                                    "Players ${room.playerModels.length}/${AppConstants.maxPlayer}",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             Divider(height: 1),
                           ],
@@ -186,5 +183,18 @@ class _RoomPageState extends State<RoomPage> {
 
   void createNewRoom() {
     _roomBloc.createNew(widget.playerModel.id);
+  }
+
+  void goToCardManager(RoomModel roomModel) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return CardManagerPage(
+              mainPlayer: widget.playerModel, room: roomModel);
+        },
+      ),
+    ).then((_) {
+      _roomBloc.getRooms();
+    });
   }
 }

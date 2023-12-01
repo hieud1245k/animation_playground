@@ -29,7 +29,7 @@ class PlayerItem extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            "${player.name} ${player.tablePlace}",
+            "${player.name}_${player.tablePlace}",
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,

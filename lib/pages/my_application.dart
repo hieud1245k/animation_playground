@@ -35,10 +35,23 @@ class _MyApplicationState extends State<MyApplication> {
           switch (snapshot.data) {
             case ConnectState.SUCCESS:
               return _buildContent();
-            default:
+            case ConnectState.ERROR:
+              return Center(
+                child: Text(
+                  "Connect to server error",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+              );
+            case ConnectState.IN_PROGRESS:
               return Center(
                 child: const CircularProgressIndicator(),
               );
+            default:
+              return const SizedBox.shrink();
           }
         },
       ),

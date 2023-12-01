@@ -57,13 +57,11 @@ class _CardManagerPageState extends State<CardManagerPage> {
         stream: _roomStreamController.stream,
         builder: (context, snapshot) {
           final room = snapshot.data ?? widget.room;
+          final players = room.getPlayers(context, widget.mainPlayer);
           return Stack(
             children: [
               Stack(
-                children: room
-                    .getPlayers(context)
-                    .map((e) => PlayerItem(player: e))
-                    .toList(),
+                children: players.map((e) => PlayerItem(player: e)).toList(),
               ),
               Positioned(
                 bottom: 24,
@@ -73,6 +71,25 @@ class _CardManagerPageState extends State<CardManagerPage> {
                   child: Text("Leave room"),
                 ),
               ),
+              if (players.length == 1)
+                Center(
+                  child: Text(
+                    "Waiting players...",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                ),
+              if (players.length > 1 &&
+                  widget.mainPlayer.id == room.playerModels[0].id)
+                Center(
+                  child: ElevatedButton(
+                    onPressed: startGame,
+                    child: Text("Start"),
+                  ),
+                ),
             ],
           );
         },
@@ -92,4 +109,6 @@ class _CardManagerPageState extends State<CardManagerPage> {
       );
     }
   }
+
+  void startGame() {}
 }

@@ -21,8 +21,12 @@ class RoomModel extends BaseModel {
     );
   }
 
-  List<Player> getPlayers(BuildContext context) {
+  List<Player> getPlayers(BuildContext context, PlayerModel mainPlayer) {
     List<Player> players = [];
+    final playerModels = [
+      mainPlayer,
+      ...this.playerModels.where((e) => e.id != mainPlayer.id),
+    ];
     for (var i = 0; i < playerModels.length; i++) {
       Player player = Player(
         tablePlace: i,
