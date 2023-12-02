@@ -1,5 +1,5 @@
 import 'package:animation_playground/core/common/extensions/context_extensions.dart';
-import 'package:animation_playground/data/models/BaseModel.dart';
+import 'package:animation_playground/data/models/base_model.dart';
 import 'package:animation_playground/data/models/player_model.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -27,10 +27,13 @@ class RoomModel extends BaseModel {
       mainPlayer,
       ...this.playerModels.where((e) => e.id != mainPlayer.id),
     ];
+    final adminId = this.playerModels[0].id;
     for (var i = 0; i < playerModels.length; i++) {
+      final playerModel = playerModels[i];
       Player player = Player(
         tablePlace: i,
-        name: playerModels[i].name,
+        name: playerModel.name,
+        isAdmin: adminId == playerModel.id,
       );
       double _screenWidth = context.screenSize.width;
       double _screenHeight = context.screenSize.height;
@@ -47,7 +50,7 @@ class RoomModel extends BaseModel {
           player.left = 80;
           player.top = 30;
           break;
-        case 3: //Fron player table place
+        case 3:
           player.left = (_screenWidth / 2);
           player.top = 15;
           break;

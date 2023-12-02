@@ -23,7 +23,8 @@ class PlayerItem extends StatelessWidget {
               child: Icon(
                 Icons.person,
                 size: 36,
-                color: Colors.greenAccent,
+                color:
+                    player.isAdmin ? Colors.orangeAccent : Colors.greenAccent,
               ),
             ),
           ),

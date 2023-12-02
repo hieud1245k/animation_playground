@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class Player {
   final int tablePlace;
   final String name;
+  final bool isAdmin;
   List<GlobalKey<CardItemState>> playerCards = [];
   double left = 0;
   double top = 0;
@@ -12,6 +13,7 @@ class Player {
   Player({
     required this.tablePlace,
     required this.name,
+    this.isAdmin = false,
   });
 
   Vector get playerPosition => new Vector(left, top);
