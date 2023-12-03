@@ -10,6 +10,8 @@ abstract class RoomRemoteDataSource {
   Future<RoomModel> leaveRoom(playerId, roomId);
 
   Future<RoomModel> joinRoom(playerId, roomId);
+
+  Future<RoomModel> startGame(roomId);
 }
 
 class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
@@ -59,6 +61,14 @@ class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
       queryParameters: {
         "player_id": playerId,
       },
+    );
+    return RoomModel.fromJson(response);
+  }
+
+  @override
+  Future<RoomModel> startGame(roomId) async {
+    final response = await _dioService.put(
+      "/api/rooms/start-game/$roomId/",
     );
     return RoomModel.fromJson(response);
   }

@@ -1,23 +1,30 @@
+import 'package:animation_playground/classes/card.dart';
 import 'package:animation_playground/core/common/extensions/context_extensions.dart';
 import 'package:animation_playground/data/models/base_model.dart';
+import 'package:animation_playground/data/models/card_model.dart';
 import 'package:animation_playground/data/models/player_model.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../classes/player.dart';
 
 class RoomModel extends BaseModel {
   final List<PlayerModel> playerModels;
 
+  final List<CardModel> cardModels;
+
   RoomModel({
     required super.id,
     required this.playerModels,
+    required this.cardModels,
   });
 
   factory RoomModel.fromJson(Map? json) {
     final playerJson = json?["playerDTOs"] as List? ?? [];
+    final cardJson = json?["cards"] as List? ?? [];
     return RoomModel(
       id: json?["id"],
       playerModels: playerJson.map((e) => PlayerModel.fromJson(e)).toList(),
+      cardModels: cardJson.map((e) => CardModel.fromJson(e)).toList(),
     );
   }
 
@@ -74,5 +81,15 @@ class RoomModel extends BaseModel {
       players.add(player);
     }
     return players;
+  }
+
+  List<CardItem> getCardItems() {
+    return cardModels
+        .map((e) => CardItem(
+              color: Colors.black12,
+              key: GlobalKey(),
+              card: e.playingCard,
+            ))
+        .toList();
   }
 }

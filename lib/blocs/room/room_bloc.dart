@@ -32,4 +32,8 @@ class RoomBloc extends BaseBloc with SingleBlocMixin {
       onSuccess: (data) => JoinRoomSuccess(room: data),
     );
   }
+
+  Future startGame(roomId) {
+    return _repository.startGame(roomId);
+  }
 }

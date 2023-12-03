@@ -28,16 +28,25 @@ class CardManagerPage extends StatefulWidget {
 
 class _CardManagerPageState extends State<CardManagerPage> {
   late StreamController<RoomModel> _roomStreamController;
+  late StreamController<RoomModel> _roundStreamController;
   late RoomBloc _roomBloc;
 
   @override
   void initState() {
     _roomStreamController = StreamController();
+    _roundStreamController = StreamController();
     stompClient.subscribe(
       destination: "/queue/room/${widget.room.id}",
       callback: (frame) {
         final roomModel = RoomModel.fromJson(jsonDecode(frame.body ?? ""));
         _roomStreamController.sink.add(roomModel);
+      },
+    );
+    stompClient.subscribe(
+      destination: "/queue/round/${widget.room.id}",
+      callback: (frame) {
+        final roomModel = RoomModel.fromJson(jsonDecode(frame.body ?? ""));
+        _roundStreamController.sink.add(roomModel);
       },
     );
     _roomBloc = getIt<RoomBloc>();
@@ -47,6 +56,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
   @override
   void dispose() {
     _roomStreamController.sink.close();
+    _roundStreamController.sink.close();
     super.dispose();
   }
 
@@ -110,5 +120,16 @@ class _CardManagerPageState extends State<CardManagerPage> {
     }
   }
 
-  void startGame() {}
+  void startGame() async {
+    try {
+      await _roomBloc.startGame(widget.room.id);
+      Navigator.pop(context);
+    } catch (error) {
+      Fluttertoast.showToast(
+        msg: "Start game failed due to: ${error}",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP_RIGHT,
+      );
+    }
+  }
 }

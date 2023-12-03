@@ -12,6 +12,8 @@ abstract class RoomRepository extends BaseRepository {
   Future<RoomModel> leaveRoom(playerId, roomId);
 
   Future<RoomModel> joinRoom(playerId, roomId);
+
+  Future<RoomModel> startGame(roomId);
 }
 
 class RoomRepositoryImpl implements RoomRepository {
@@ -37,5 +39,10 @@ class RoomRepositoryImpl implements RoomRepository {
   @override
   Future<RoomModel> joinRoom(playerId, roomId) {
     return _roomRemoteDataSource.joinRoom(playerId, roomId);
+  }
+
+  @override
+  Future<RoomModel> startGame(roomId) {
+    return _roomRemoteDataSource.startGame(roomId);
   }
 }
