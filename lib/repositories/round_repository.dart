@@ -1,0 +1,20 @@
+import 'package:animation_playground/data/source/remote/data_sources/round_remote_data_source.dart';
+import 'package:animation_playground/di/injection.dart';
+import 'package:animation_playground/repositories/repositories.dart';
+
+import '../data/models/round_model.dart';
+
+abstract class RoundRepository extends BaseRepository {
+  Future<RoundModel> create(roomId);
+}
+
+class RoundRepositoryImpl implements RoundRepository {
+  final RoundRemoteDataSource _roundRemoteDataSource;
+
+  RoundRepositoryImpl() : _roundRemoteDataSource = getIt();
+
+  @override
+  Future<RoundModel> create(roomId) {
+    return _roundRemoteDataSource.create(roomId);
+  }
+}

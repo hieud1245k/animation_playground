@@ -3,6 +3,7 @@ import 'package:animation_playground/classes/vector.dart';
 import 'package:flutter/material.dart';
 
 class Player {
+  final dynamic playerId;
   final int tablePlace;
   final String name;
   final bool isAdmin;
@@ -11,6 +12,7 @@ class Player {
   double top = 0;
 
   Player({
+    this.playerId,
     required this.tablePlace,
     required this.name,
     this.isAdmin = false,

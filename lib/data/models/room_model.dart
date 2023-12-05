@@ -38,6 +38,7 @@ class RoomModel extends BaseModel {
     for (var i = 0; i < playerModels.length; i++) {
       final playerModel = playerModels[i];
       Player player = Player(
+        playerId: playerModel.id,
         tablePlace: i,
         name: playerModel.name,
         isAdmin: adminId == playerModel.id,

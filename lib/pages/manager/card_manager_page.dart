@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:animation_playground/blocs/room/room_bloc.dart';
+import 'package:animation_playground/blocs/round/round_bloc.dart';
+import 'package:animation_playground/classes/card.dart';
 import 'package:animation_playground/data/models/player_model.dart';
 import 'package:animation_playground/data/models/room_model.dart';
+import 'package:animation_playground/data/models/round_model.dart';
 import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/main.dart';
 import 'package:animation_playground/pages/base_page.dart';
@@ -28,8 +31,11 @@ class CardManagerPage extends StatefulWidget {
 
 class _CardManagerPageState extends State<CardManagerPage> {
   late StreamController<RoomModel> _roomStreamController;
-  late StreamController<RoomModel> _roundStreamController;
+  late StreamController<RoundModel> _roundStreamController;
   late RoomBloc _roomBloc;
+  late RoundBloc _roundBloc;
+
+  bool _isPending = false;
 
   @override
   void initState() {
@@ -38,6 +44,9 @@ class _CardManagerPageState extends State<CardManagerPage> {
     stompClient.subscribe(
       destination: "/queue/room/${widget.room.id}",
       callback: (frame) {
+        if (_isPending) {
+          return;
+        }
         final roomModel = RoomModel.fromJson(jsonDecode(frame.body ?? ""));
         _roomStreamController.sink.add(roomModel);
       },
@@ -45,11 +54,12 @@ class _CardManagerPageState extends State<CardManagerPage> {
     stompClient.subscribe(
       destination: "/queue/round/${widget.room.id}",
       callback: (frame) {
-        final roomModel = RoomModel.fromJson(jsonDecode(frame.body ?? ""));
-        _roundStreamController.sink.add(roomModel);
+        final roundModel = RoundModel.fromJson(jsonDecode(frame.body ?? ""));
+        _roundStreamController.sink.add(roundModel);
       },
     );
-    _roomBloc = getIt<RoomBloc>();
+    _roomBloc = getIt();
+    _roundBloc = getIt();
     super.initState();
   }
 
@@ -81,25 +91,61 @@ class _CardManagerPageState extends State<CardManagerPage> {
                   child: Text("Leave room"),
                 ),
               ),
-              if (players.length == 1)
-                Center(
-                  child: Text(
-                    "Waiting players...",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                ),
-              if (players.length > 1 &&
-                  widget.mainPlayer.id == room.playerModels[0].id)
-                Center(
-                  child: ElevatedButton(
-                    onPressed: startGame,
-                    child: Text("Start"),
-                  ),
-                ),
+              StreamBuilder(
+                stream: _roundStreamController.stream,
+                builder: (context, snapshot) {
+                  RoundModel? roundModel = snapshot.data;
+                  if (snapshot.hasData && roundModel != null) {
+                    _isPending = true;
+                    final allCards = roundModel.cardModels
+                        .map((e) => CardItem(
+                              key: GlobalKey(),
+                              color: Colors.black54,
+                              card: e.playingCard,
+                            ))
+                        .toList();
+                    // Future.delayed(
+                    //   Duration(
+                    //     seconds: 1,
+                    //   ),
+                    //   () {
+                    //     for (var card in allCards) {
+                    //       for (var player in players) {
+                    //         if (card.card.playerId == player.playerId) {
+                    //           player.addCard(
+                    //               card.key as GlobalKey<CardItemState>);
+                    //           continue;
+                    //         }
+                    //       }
+                    //     }
+                    //   },
+                    // );
+                    return Stack(
+                      children: allCards,
+                    );
+                  }
+                  if (players.length == 1)
+                    return Center(
+                      child: Text(
+                        "Waiting players...",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    );
+                  if (players.length > 1 &&
+                      widget.mainPlayer.id == room.playerModels[0].id)
+                    return Center(
+                      child: ElevatedButton(
+                        onPressed: startGame,
+                        child: Text("Start"),
+                      ),
+                    );
+                  return const SizedBox.shrink();
+                },
+              ),
             ],
           );
         },
@@ -122,7 +168,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
 
   void startGame() async {
     try {
-      await _roomBloc.startGame(widget.room.id);
+      await _roundBloc.start(widget.room.id);
       Navigator.pop(context);
     } catch (error) {
       Fluttertoast.showToast(
