@@ -1,4 +1,5 @@
 import 'package:animation_playground/blocs/player/player_bloc.dart';
+import 'package:animation_playground/core/common/extensions/context_extensions.dart';
 import 'package:animation_playground/core/common/utils/app_preferences.dart';
 import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/pages/home/home_page.dart';
@@ -24,6 +25,8 @@ class _MyApplicationState extends State<MyApplication> {
 
   @override
   Widget build(BuildContext context) {
+    screenWidth = context.screenSize.width;
+    screenHeight = context.screenSize.height;
     return MaterialApp(
       title: 'Card games',
       theme: ThemeData(
