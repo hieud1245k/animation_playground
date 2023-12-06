@@ -1,10 +1,11 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:animation_playground/blocs/room/room_bloc.dart';
 import 'package:animation_playground/blocs/round/round_bloc.dart';
-import 'package:animation_playground/classes/card.dart';
+import 'package:animation_playground/classes/card_item.dart';
 import 'package:animation_playground/classes/player.dart';
+import 'package:animation_playground/core/common/extensions/list_extensions.dart';
+import 'package:animation_playground/data/models/card_model.dart';
 import 'package:animation_playground/data/models/player_model.dart';
 import 'package:animation_playground/data/models/room_model.dart';
 import 'package:animation_playground/di/injection.dart';
@@ -42,19 +43,28 @@ class _CardManagerPageState extends State<CardManagerPage> {
   List<CardItem> allCards = [];
   List<Player> players = [];
   RoomModel? roomModel;
+  RoundModel? roundModel;
 
   @override
   void initState() {
     for (var i = 0; i < allCardStates.length; i++) {
+      PlayingCard playingCard = PlayingCard(
+        STANDARD_SUITS[
+            ((i + 1) ~/ SUITED_VALUES.length) % STANDARD_SUITS.length],
+        SUITED_VALUES[(i + 1) % SUITED_VALUES.length],
+      );
       allCards.add(
         CardItem(
-          key: allCardStates[i],
+          state: allCardStates[i],
           color: Colors.black12,
-          card: PlayingCard(
-            STANDARD_SUITS[
-                ((i + 1) ~/ SUITED_VALUES.length) % STANDARD_SUITS.length],
-            SUITED_VALUES[(i + 1) % SUITED_VALUES.length],
-          ),
+          card: playingCard,
+          onTap: () async {
+            try {
+              _roundBloc.openCard(roundModel?.id, playingCard);
+            } catch (e) {
+              Fluttertoast.showToast(msg: "Open card error, $e");
+            }
+          },
         ),
       );
     }
@@ -70,18 +80,40 @@ class _CardManagerPageState extends State<CardManagerPage> {
       },
     );
     stompClient.subscribe(
-      destination: "/queue/round/${widget.room.id}",
+      destination: "/queue/room/round/${widget.room.id}",
       callback: (frame) async {
         _isPending = true;
-        print(frame.body);
         final roundModel = RoundModel.fromJson(jsonDecode(frame.body ?? ""));
+        this.roundModel = roundModel;
+        stompClient.subscribe(
+          destination: "/queue/round/${roundModel.id}",
+          callback: (roundFrame) {
+            final newRoundModel =
+                RoundModel.fromJson(jsonDecode(roundFrame.body ?? ""));
+            for (int i = 0; i < newRoundModel.cardModels.length; i++) {
+              CardModel newCardModel = newRoundModel.cardModels[i];
+              if (newCardModel.isOpen) {
+                PlayingCard newPlayingCard = newCardModel.playingCard;
+                for (var cardItem in allCards) {
+                  PlayingCard originPlayingCard = cardItem.card;
+                  if (originPlayingCard.suit == newPlayingCard.suit &&
+                      originPlayingCard.value == newPlayingCard.value &&
+                      originPlayingCard.playerId == newPlayingCard.playerId) {
+                    cardItem.state.currentState?.openCard();
+                    break;
+                  }
+                }
+              }
+            }
+          },
+        );
         for (int i = 0; i < roundModel.cardModels.length; i++) {
-          allCards[i].card.copy(roundModel.cardModels[i].playingCard);
-        }
-        for (var i = 0; i < players.length * 3; i++) {
-          var player = players[i % players.length];
-          var card = allCardStates[i];
-          player.addCard(card);
+          var card = allCards[i].card;
+          card.copy(roundModel.cardModels[i].playingCard);
+          var player = players.firstWhereOrNull(
+            (e) => e.playerId == card.playerId,
+          );
+          player?.addCard(allCards[i].state);
           await Future.delayed(Duration(milliseconds: 200));
         }
         players

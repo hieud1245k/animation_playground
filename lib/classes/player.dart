@@ -1,4 +1,4 @@
-import 'package:animation_playground/classes/card.dart';
+import 'package:animation_playground/classes/card_item.dart';
 import 'package:animation_playground/classes/vector.dart';
 import 'package:flutter/material.dart';
 

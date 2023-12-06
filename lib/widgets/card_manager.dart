@@ -1,4 +1,4 @@
-import 'package:animation_playground/classes/card.dart';
+import 'package:animation_playground/classes/card_item.dart';
 import 'package:animation_playground/classes/player.dart';
 import 'package:animation_playground/widgets/player_item.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,7 @@ class _CardManagerState extends State<CardManager> {
     for (var i = 0; i < widget.allCardKey.length; i++) {
       allCards.add(
         CardItem(
-          key: widget.allCardKey[i],
+          state: widget.allCardKey[i],
           color: Colors.black12,
           card: PlayingCard(
             STANDARD_SUITS[

@@ -6,6 +6,8 @@ const _endpoint = "/api/rounds";
 
 abstract class RoundRemoteDataSource {
   Future<RoundModel> create(roomId);
+
+  Future<RoundModel> openCard(roomId, Map<String, dynamic> params);
 }
 
 class RoundRemoteDataSourceImpl implements RoundRemoteDataSource {
@@ -20,6 +22,15 @@ class RoundRemoteDataSourceImpl implements RoundRemoteDataSource {
       queryParameters: {
         "room_id": roomId,
       },
+    );
+    return RoundModel.fromJson(response);
+  }
+
+  @override
+  Future<RoundModel> openCard(roomId, Map<String, dynamic> params) async {
+    final response = await _dioService.put(
+      "$_endpoint/$roomId",
+      data: params,
     );
     return RoundModel.fromJson(response);
   }

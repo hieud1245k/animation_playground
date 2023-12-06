@@ -10,12 +10,15 @@ import 'package:playing_cards/playing_cards.dart';
 class CardItem extends StatefulWidget {
   final PlayingCard card;
   final Color color;
+  final GlobalKey<CardItemState> state;
+  final void Function()? onTap;
 
   CardItem({
-    Key? key,
+    required this.state,
     required this.color,
     required this.card,
-  }) : super(key: key);
+    this.onTap,
+  }) : super(key: state);
   CardItemState createState() => CardItemState();
 }
 
@@ -245,7 +248,7 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
               : initialScale.y,
           child: GestureDetector(
             onTap: () {
-              if (canOpen) openCard();
+              if (canOpen && !isOpen) widget.onTap?.call();
             },
             child: FlipCard(
               controller: flipCardController,
@@ -277,4 +280,6 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
       flipCardController.toggleCard();
     }
   }
+
+  bool get isOpen => flipCardController.state?.isFront == true;
 }

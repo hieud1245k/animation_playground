@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:animation_playground/classes/card.dart';
+import 'package:animation_playground/classes/card_item.dart';
 import 'package:animation_playground/classes/player.dart';
 import 'package:animation_playground/core/common/extensions/context_extensions.dart';
 import 'package:animation_playground/core/config/build_config.dart';

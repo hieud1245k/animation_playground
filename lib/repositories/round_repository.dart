@@ -6,6 +6,8 @@ import '../data/models/round_model.dart';
 
 abstract class RoundRepository extends BaseRepository {
   Future<RoundModel> create(roomId);
+
+  Future<RoundModel> openCard(roomId, Map<String, dynamic> params);
 }
 
 class RoundRepositoryImpl implements RoundRepository {
@@ -16,5 +18,11 @@ class RoundRepositoryImpl implements RoundRepository {
   @override
   Future<RoundModel> create(roomId) {
     return _roundRemoteDataSource.create(roomId);
+  }
+
+  @override
+  Future<RoundModel> openCard(roomId, Map<String, dynamic> params) {
+    print(params);
+    return _roundRemoteDataSource.openCard(roomId, params);
   }
 }
