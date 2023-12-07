@@ -11,6 +11,8 @@ import 'package:animation_playground/data/models/room_model.dart';
 import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/main.dart';
 import 'package:animation_playground/pages/base_page.dart';
+import 'package:animation_playground/pages/manager/widgets/menu_item.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:playing_cards/playing_cards.dart';
@@ -90,9 +92,11 @@ class _CardManagerPageState extends State<CardManagerPage> {
           callback: (roundFrame) {
             final newRoundModel =
                 RoundModel.fromJson(jsonDecode(roundFrame.body ?? ""));
+            int cardOpenCount = 0;
             for (int i = 0; i < newRoundModel.cardModels.length; i++) {
               CardModel newCardModel = newRoundModel.cardModels[i];
               if (newCardModel.isOpen) {
+                cardOpenCount++;
                 PlayingCard newPlayingCard = newCardModel.playingCard;
                 for (var cardItem in allCards) {
                   PlayingCard originPlayingCard = cardItem.card;
@@ -104,6 +108,9 @@ class _CardManagerPageState extends State<CardManagerPage> {
                   }
                 }
               }
+            }
+            if (cardOpenCount == newRoundModel.cardModels.length) {
+              showWinnerAlert("Test");
             }
           },
         );
@@ -144,14 +151,6 @@ class _CardManagerPageState extends State<CardManagerPage> {
           Stack(
             children: players.map((e) => PlayerItem(player: e)).toList(),
           ),
-          Positioned(
-            bottom: 24,
-            right: 24,
-            child: TextButton(
-              onPressed: leaveRoom,
-              child: Text("Leave room"),
-            ),
-          ),
           Stack(
             children: allCards,
           ),
@@ -167,14 +166,62 @@ class _CardManagerPageState extends State<CardManagerPage> {
               ),
             ),
           if (players.length > 1 &&
-              widget.mainPlayer.id == room.playerModels[0].id)
+              widget.mainPlayer.id == room.playerModels[0].id &&
+              !_isPending)
             Center(
               child: ElevatedButton(
                 onPressed: startGame,
                 child: Text("Start"),
               ),
             ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: buildMenuWidget(),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget buildMenuWidget() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton2(
+        customButton: CircleAvatar(
+          child: const Icon(
+            Icons.menu,
+            size: 24,
+            color: Colors.blue,
+          ),
+        ),
+        items: MenuItems.firstItems
+            .map((item) => DropdownMenuItem<MenuItem>(
+                  value: item,
+                  child: MenuItems.buildItem(item),
+                ))
+            .toList(),
+        onChanged: (value) {
+          switch (value) {
+            case MenuItems.leaveRoom:
+              leaveRoom();
+              break;
+            case MenuItems.showHistories:
+              showHistories();
+              break;
+          }
+        },
+        dropdownStyleData: DropdownStyleData(
+          width: 200,
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: Colors.white,
+          ),
+          offset: const Offset(0, 8),
+        ),
+        menuItemStyleData: MenuItemStyleData(
+          padding: const EdgeInsets.only(left: 16, right: 16),
+        ),
       ),
     );
   }
@@ -192,9 +239,35 @@ class _CardManagerPageState extends State<CardManagerPage> {
     }
   }
 
+  void showHistories() {
+    showWinnerAlert("Hieu Nguyen");
+  }
+
+  void showWinnerAlert(String name) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Congrats"),
+          content: Text("$name is winner!"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Ok"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void startGame() async {
     try {
-      _isPending = true;
+      setState(() {
+        _isPending = true;
+      });
       await _roundBloc.start(widget.room.id);
     } catch (error) {
       Fluttertoast.showToast(

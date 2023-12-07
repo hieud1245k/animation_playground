@@ -16,4 +16,6 @@ class RoundModel extends BaseModel {
       cardModels: cardJson.map((e) => CardModel.fromJson(e)).toList(),
     );
   }
+
+  dynamic computeWinner() {}
 }

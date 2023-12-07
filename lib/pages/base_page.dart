@@ -23,7 +23,9 @@ class BasePage extends StatelessWidget {
             fit: BoxFit.fill,
           ),
         ),
-        child: child,
+        child: SafeArea(
+          child: child,
+        ),
       ),
     );
   }
