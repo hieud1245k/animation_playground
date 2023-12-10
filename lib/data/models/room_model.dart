@@ -9,22 +9,24 @@ import '../../classes/player.dart';
 
 class RoomModel extends BaseModel {
   final List<PlayerModel> playerModels;
-
   final List<CardModel> cardModels;
+  final dynamic currentRoundId;
 
   RoomModel({
     required super.id,
     required this.playerModels,
     required this.cardModels,
+    this.currentRoundId,
   });
 
   factory RoomModel.fromJson(Map? json) {
-    final playerJson = json?["playerDTOs"] as List? ?? [];
+    final playerJson = json?["players"] as List? ?? [];
     final cardJson = json?["cards"] as List? ?? [];
     return RoomModel(
       id: json?["id"],
       playerModels: playerJson.map((e) => PlayerModel.fromJson(e)).toList(),
       cardModels: cardJson.map((e) => CardModel.fromJson(e)).toList(),
+      currentRoundId: json?["current_round_id"],
     );
   }
 

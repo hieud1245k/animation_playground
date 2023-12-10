@@ -44,11 +44,12 @@ class _CardManagerPageState extends State<CardManagerPage> {
       List.generate(52, (index) => GlobalKey());
   List<CardItem> allCards = [];
   List<Player> players = [];
-  RoomModel? roomModel;
+  late RoomModel roomModel;
   RoundModel? roundModel;
 
   @override
   void initState() {
+    roomModel = widget.room;
     for (var i = 0; i < allCardStates.length; i++) {
       PlayingCard playingCard = PlayingCard(
         STANDARD_SUITS[
@@ -76,9 +77,14 @@ class _CardManagerPageState extends State<CardManagerPage> {
         if (_isPending) {
           return;
         }
-        setState(() {
-          roomModel = RoomModel.fromJson(jsonDecode(frame.body ?? ""));
-        });
+        try {
+          final roomModel = RoomModel.fromJson(jsonDecode(frame.body ?? ""));
+          setState(() {
+            this.roomModel = roomModel;
+          });
+        } catch (e) {
+          print("Get room failed, $e");
+        }
       },
     );
     stompClient.subscribe(
@@ -92,11 +98,9 @@ class _CardManagerPageState extends State<CardManagerPage> {
           callback: (roundFrame) {
             final newRoundModel =
                 RoundModel.fromJson(jsonDecode(roundFrame.body ?? ""));
-            int cardOpenCount = 0;
             for (int i = 0; i < newRoundModel.cardModels.length; i++) {
               CardModel newCardModel = newRoundModel.cardModels[i];
               if (newCardModel.isOpen) {
-                cardOpenCount++;
                 PlayingCard newPlayingCard = newCardModel.playingCard;
                 for (var cardItem in allCards) {
                   PlayingCard originPlayingCard = cardItem.card;
@@ -109,8 +113,13 @@ class _CardManagerPageState extends State<CardManagerPage> {
                 }
               }
             }
-            if (cardOpenCount == newRoundModel.cardModels.length) {
-              showWinnerAlert("Test");
+            final winnerId = newRoundModel.winnerId;
+            if (winnerId != null) {
+              final winnerPlayer = roomModel?.playerModels
+                  .firstWhereOrNull((e) => e.id == winnerId);
+              if (winnerPlayer != null) {
+                showWinnerAlert(winnerPlayer.name);
+              }
             }
           },
         );
@@ -246,6 +255,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
   void showWinnerAlert(String name) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           title: Text("Congrats"),
@@ -254,6 +264,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                resetGame();
               },
               child: Text("Ok"),
             ),
@@ -262,6 +273,8 @@ class _CardManagerPageState extends State<CardManagerPage> {
       },
     );
   }
+
+  void resetGame() {}
 
   void startGame() async {
     try {
