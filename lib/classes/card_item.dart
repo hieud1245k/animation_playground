@@ -281,5 +281,14 @@ class CardItemState extends State<CardItem> with TickerProviderStateMixin {
     }
   }
 
+  void reset() {
+    if (flipCardController.state?.isFront == true) {
+      flipCardController.toggleCard();
+    }
+    initialScale = Vector(75, 125);
+    moveTo(Vector(0, (screenHeight * 0.75) - initialScale.x));
+    scaleTo(initialScale);
+  }
+
   bool get isOpen => flipCardController.state?.isFront == true;
 }

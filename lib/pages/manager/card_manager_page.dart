@@ -37,11 +37,12 @@ class CardManagerPage extends StatefulWidget {
 class _CardManagerPageState extends State<CardManagerPage> {
   late RoomBloc _roomBloc;
   late RoundBloc _roundBloc;
+  late ValueNotifier<bool> _pendingNotifier;
 
-  bool _isPending = false;
-
-  List<GlobalKey<CardItemState>> allCardStates =
-      List.generate(52, (index) => GlobalKey());
+  List<GlobalKey<CardItemState>> allCardStates = List.generate(
+    52,
+    (index) => GlobalKey(),
+  );
   List<CardItem> allCards = [];
   List<Player> players = [];
   late RoomModel roomModel;
@@ -74,7 +75,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
     stompClient.subscribe(
       destination: "/queue/room/${widget.room.id}",
       callback: (frame) {
-        if (_isPending) {
+        if (_pendingNotifier.value) {
           return;
         }
         try {
@@ -90,7 +91,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
     stompClient.subscribe(
       destination: "/queue/room/round/${widget.room.id}",
       callback: (frame) async {
-        _isPending = true;
+        _pendingNotifier.value = true;
         final roundModel = RoundModel.fromJson(jsonDecode(frame.body ?? ""));
         this.roundModel = roundModel;
         stompClient.subscribe(
@@ -115,7 +116,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
             }
             final winnerId = newRoundModel.winnerId;
             if (winnerId != null) {
-              final winnerPlayer = roomModel?.playerModels
+              final winnerPlayer = roomModel.playerModels
                   .firstWhereOrNull((e) => e.id == winnerId);
               if (winnerPlayer != null) {
                 showWinnerAlert(winnerPlayer.name);
@@ -142,18 +143,19 @@ class _CardManagerPageState extends State<CardManagerPage> {
     );
     _roomBloc = getIt();
     _roundBloc = getIt();
+    _pendingNotifier = ValueNotifier(false);
     super.initState();
   }
 
   @override
   void dispose() {
+    _pendingNotifier.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final room = roomModel ?? widget.room;
-    players = room.getPlayers(context, widget.mainPlayer);
+    players = roomModel.getPlayers(context, widget.mainPlayer);
     return BasePage(
       child: Stack(
         children: [
@@ -163,26 +165,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
           Stack(
             children: allCards,
           ),
-          if (players.length == 1)
-            Center(
-              child: Text(
-                "Waiting players...",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.blueAccent,
-                ),
-              ),
-            ),
-          if (players.length > 1 &&
-              widget.mainPlayer.id == room.playerModels[0].id &&
-              !_isPending)
-            Center(
-              child: ElevatedButton(
-                onPressed: startGame,
-                child: Text("Start"),
-              ),
-            ),
+          _buildStateWidget(),
           Positioned(
             top: 8,
             right: 8,
@@ -235,6 +218,47 @@ class _CardManagerPageState extends State<CardManagerPage> {
     );
   }
 
+  Widget _buildStateWidget() {
+    if (players.length == 1) {
+      return Center(
+        child: Text(
+          "Waiting players...",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.blueAccent,
+          ),
+        ),
+      );
+    }
+    return ValueListenableBuilder(
+      valueListenable: _pendingNotifier,
+      builder: (context, isPending, child) {
+        if (isPending) {
+          return const SizedBox.shrink();
+        }
+        if (widget.mainPlayer.id == roomModel.playerModels[0].id) {
+          return Center(
+            child: ElevatedButton(
+              onPressed: startGame,
+              child: Text("Start"),
+            ),
+          );
+        }
+        return Center(
+          child: Text(
+            "Waiting for the host to start...",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.blueAccent,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void leaveRoom() async {
     try {
       await _roomBloc.leaveRoom(widget.mainPlayer.id, widget.room.id);
@@ -274,14 +298,21 @@ class _CardManagerPageState extends State<CardManagerPage> {
     );
   }
 
-  void resetGame() {}
+  void resetGame() async {
+    for (var player in players) {
+      for (var card in player.playerCards) {
+        card.currentState?.reset();
+        await Future.delayed(Duration(milliseconds: 100));
+      }
+      player.playerCards = [];
+    }
+    _pendingNotifier.value = false;
+  }
 
   void startGame() async {
     try {
-      setState(() {
-        _isPending = true;
-      });
       await _roundBloc.start(widget.room.id);
+      _pendingNotifier.value = true;
     } catch (error) {
       Fluttertoast.showToast(
         msg: "Start game failed due to: ${error}",
