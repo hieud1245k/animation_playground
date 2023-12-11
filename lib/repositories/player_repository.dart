@@ -2,10 +2,17 @@ import 'package:animation_playground/data/source/remote/data_sources/player_remo
 import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/repositories/repositories.dart';
 
-abstract class PlayerRepository extends BaseRepository {}
+abstract class PlayerRepository extends BaseRepository {
+  Future logout(playerId);
+}
 
 class PlayerRepositoryImpl implements PlayerRepository {
   final PlayerRemoteDataSource _playerRemoteDataSource;
 
   PlayerRepositoryImpl() : _playerRemoteDataSource = getIt();
+
+  @override
+  Future logout(playerId) {
+    return _playerRemoteDataSource.logout(playerId);
+  }
 }

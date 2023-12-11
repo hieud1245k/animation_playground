@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:animation_playground/core/common/utils/utils.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:stomp_dart_client/stomp_handler.dart';
 
 import '../../core/common/utils/app_preferences.dart';
 import '../../data/models/player_model.dart';
@@ -81,6 +83,7 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 48),
         TextFormField(
           controller: _nameController,
+          onFieldSubmitted: (value) => sendPlayerName(),
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 16,
@@ -113,31 +116,44 @@ class _HomePageState extends State<HomePage> {
   void sendPlayerName() {
     final playerName = _nameController.text;
     if (playerName.length < 4) {
+      Fluttertoast.showToast(
+        msg: "Player name should be greater than 4 characters",
+      );
       return;
     }
     String path = "/specific/player/${Utils.convertNameToPath(playerName)}";
-    stompClient.subscribe(
+    print(path);
+    StompUnsubscribe? successUnsubscribe;
+    successUnsubscribe = stompClient.subscribe(
       destination: "$path/success",
       callback: (frame) async {
+        successUnsubscribe?.call();
         print("success ${frame.body}");
         final playerModel = PlayerModel.fromJson(jsonDecode(frame.body ?? ""));
         await AppPreferences.instance.setString(
           "player_name",
           playerModel.name,
         );
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => RoomPage(
-              playerModel: playerModel,
-            ),
+        Navigator.of(context)
+            .push(MaterialPageRoute(
+          builder: (context) => RoomPage(
+            playerModel: playerModel,
           ),
-        );
+        ))
+            .then((_) {
+          AppPreferences.instance.remove("player_name");
+        });
       },
     );
-    stompClient.subscribe(
+    StompUnsubscribe? failedUnsubscribe;
+    failedUnsubscribe = stompClient.subscribe(
       destination: "$path/failed",
       callback: (frame) {
-        print("po ${frame.body}");
+        failedUnsubscribe?.call();
+        Fluttertoast.showToast(
+          msg: "Submit failed! cause by: ${frame.body}",
+          gravity: ToastGravity.TOP_RIGHT,
+        );
       },
     );
     if (stompClient.connected) {

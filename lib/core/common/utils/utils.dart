@@ -6,6 +6,6 @@ class Utils {
   }
 
   static String convertNameToPath(String name) {
-    return name.toLowerCase().replaceAll("\\s+", "");
+    return name.toLowerCase().replaceAll(RegExp("\\s+"), "-");
   }
 }

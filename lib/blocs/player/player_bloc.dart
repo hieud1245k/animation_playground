@@ -6,4 +6,8 @@ class PlayerBloc extends BaseBloc {
   final PlayerRepository _playerRepository;
 
   PlayerBloc() : _playerRepository = getIt();
+
+  Future logout(playerId) {
+    return _playerRepository.logout(playerId);
+  }
 }

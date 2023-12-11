@@ -1,4 +1,5 @@
 import 'package:animation_playground/blocs/blocs.dart';
+import 'package:animation_playground/blocs/player/player_bloc.dart';
 import 'package:animation_playground/blocs/room/room_bloc.dart';
 import 'package:animation_playground/blocs/room/room_state.dart';
 import 'package:animation_playground/core/common/constants/app_contants.dart';
@@ -8,6 +9,7 @@ import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/pages/manager/card_manager_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../data/models/player_model.dart';
 
@@ -25,10 +27,12 @@ class RoomPage extends StatefulWidget {
 
 class _RoomPageState extends State<RoomPage> {
   late RoomBloc _roomBloc;
+  late PlayerBloc _playerBloc;
 
   @override
   void initState() {
     _roomBloc = getIt();
+    _playerBloc = getIt();
     _roomBloc.getRooms();
     super.initState();
   }
@@ -121,6 +125,33 @@ class _RoomPageState extends State<RoomPage> {
 
   AppBar buildAppBar() {
     return AppBar(
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text("Notice"),
+              content: Text("Are you sure you want to logout?"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("No"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    logout();
+                  },
+                  child: Text("Yes"),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
       title: Row(
         children: [
           Text("Room page"),
@@ -196,5 +227,18 @@ class _RoomPageState extends State<RoomPage> {
     ).then((_) {
       _roomBloc.getRooms();
     });
+  }
+
+  void logout() async {
+    try {
+      await _playerBloc.logout(widget.playerModel.id);
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Has some thing wrong? $e",
+        gravity: ToastGravity.TOP_RIGHT,
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
   }
 }
