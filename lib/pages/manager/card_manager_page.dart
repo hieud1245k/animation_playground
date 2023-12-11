@@ -38,6 +38,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
   late RoomBloc _roomBloc;
   late RoundBloc _roundBloc;
   late ValueNotifier<bool> _pendingNotifier;
+  late RoomModel roomModel;
 
   List<GlobalKey<CardItemState>> allCardStates = List.generate(
     52,
@@ -45,8 +46,8 @@ class _CardManagerPageState extends State<CardManagerPage> {
   );
   List<CardItem> allCards = [];
   List<Player> players = [];
-  late RoomModel roomModel;
   RoundModel? roundModel;
+  bool isWinnerDialogOpen = false;
 
   @override
   void initState() {
@@ -119,7 +120,12 @@ class _CardManagerPageState extends State<CardManagerPage> {
               final winnerPlayer = roomModel.playerModels
                   .firstWhereOrNull((e) => e.id == winnerId);
               if (winnerPlayer != null) {
-                showWinnerAlert(winnerPlayer.name);
+                Future.delayed(
+                  Duration(milliseconds: 500),
+                  () {
+                    showWinnerAlert(winnerPlayer.name);
+                  },
+                );
               }
             }
           },
@@ -165,7 +171,9 @@ class _CardManagerPageState extends State<CardManagerPage> {
           Stack(
             children: allCards,
           ),
-          _buildStateWidget(),
+          Center(
+            child: _buildStateWidget(),
+          ),
           Positioned(
             top: 8,
             right: 8,
@@ -220,14 +228,12 @@ class _CardManagerPageState extends State<CardManagerPage> {
 
   Widget _buildStateWidget() {
     if (players.length == 1) {
-      return Center(
-        child: Text(
-          "Waiting players...",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.blueAccent,
-          ),
+      return Text(
+        "Waiting players...",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.blueAccent,
         ),
       );
     }
@@ -235,24 +241,27 @@ class _CardManagerPageState extends State<CardManagerPage> {
       valueListenable: _pendingNotifier,
       builder: (context, isPending, child) {
         if (isPending) {
-          return const SizedBox.shrink();
-        }
-        if (widget.mainPlayer.id == roomModel.playerModels[0].id) {
-          return Center(
-            child: ElevatedButton(
-              onPressed: startGame,
-              child: Text("Start"),
-            ),
-          );
-        }
-        return Center(
-          child: Text(
-            "Waiting for the host to start...",
+          return Text(
+            "Tap the card to open it",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
               color: Colors.blueAccent,
             ),
+          );
+        }
+        if (widget.mainPlayer.id == roomModel.playerModels[0].id) {
+          return ElevatedButton(
+            onPressed: startGame,
+            child: Text("Start"),
+          );
+        }
+        return Text(
+          "Waiting for the host to start...",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.blueAccent,
           ),
         );
       },
@@ -277,6 +286,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
   }
 
   void showWinnerAlert(String name) {
+    isWinnerDialogOpen = true;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -286,16 +296,26 @@ class _CardManagerPageState extends State<CardManagerPage> {
           content: Text("$name is winner!"),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                resetGame();
-              },
+              onPressed: closeWinnerAlert,
               child: Text("Ok"),
             ),
           ],
         );
       },
     );
+    Future.delayed(
+      Duration(seconds: 3),
+      closeWinnerAlert,
+    );
+  }
+
+  void closeWinnerAlert() {
+    print("closeWinnerAlert");
+    if (isWinnerDialogOpen) {
+      isWinnerDialogOpen = false;
+      Navigator.of(context).pop();
+      resetGame();
+    }
   }
 
   void resetGame() async {
