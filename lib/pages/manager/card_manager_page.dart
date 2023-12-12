@@ -12,6 +12,7 @@ import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/main.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/pages/manager/widgets/menu_item.dart';
+import 'package:animation_playground/pages/manager/widgets/status_text.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -223,26 +224,16 @@ class _CardManagerPageState extends State<CardManagerPage> {
 
   Widget _buildStateWidget() {
     if (players.length == 1) {
-      return Text(
-        "Waiting players...",
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Colors.blueAccent,
-        ),
+      return StatusText(
+        text: "Waiting players...",
       );
     }
     return ValueListenableBuilder(
       valueListenable: _pendingNotifier,
       builder: (context, isPending, child) {
         if (isPending) {
-          return Text(
-            "Tap the card to open it",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.blueAccent,
-            ),
+          return StatusText(
+            text: "Tap the card to open it",
           );
         }
         if (widget.mainPlayer.id == roomModel.playerModels[0].id) {
@@ -251,13 +242,8 @@ class _CardManagerPageState extends State<CardManagerPage> {
             child: Text("Start"),
           );
         }
-        return Text(
-          "Waiting for the host to start...",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.blueAccent,
-          ),
+        return StatusText(
+          text: "Waiting for the host to start...",
         );
       },
     );
