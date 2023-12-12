@@ -39,11 +39,6 @@ class _CardManagerPageState extends State<CardManagerPage> {
   late RoundBloc _roundBloc;
   late ValueNotifier<bool> _pendingNotifier;
   late RoomModel roomModel;
-
-  List<GlobalKey<CardItemState>> allCardStates = List.generate(
-    52,
-    (index) => GlobalKey(),
-  );
   List<CardItem> allCards = [];
   List<Player> players = [];
   RoundModel? roundModel;
@@ -52,7 +47,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
   @override
   void initState() {
     roomModel = widget.room;
-    for (var i = 0; i < allCardStates.length; i++) {
+    for (var i = 0; i < 52; i++) {
       PlayingCard playingCard = PlayingCard(
         STANDARD_SUITS[
             ((i + 1) ~/ SUITED_VALUES.length) % STANDARD_SUITS.length],
@@ -60,7 +55,7 @@ class _CardManagerPageState extends State<CardManagerPage> {
       );
       allCards.add(
         CardItem(
-          state: allCardStates[i],
+          state: GlobalKey(),
           color: Colors.black12,
           card: playingCard,
           onTap: () async {

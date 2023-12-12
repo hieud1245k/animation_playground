@@ -39,13 +39,15 @@ class _MyApplicationState extends State<MyApplication> {
             case ConnectState.SUCCESS:
               return _buildContent();
             case ConnectState.ERROR:
-              return Center(
-                child: Text(
-                  "Connect to server error",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+              return Scaffold(
+                body: Center(
+                  child: Text(
+                    "Connect to server error",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
               );
@@ -62,9 +64,6 @@ class _MyApplicationState extends State<MyApplication> {
   }
 
   Widget _buildContent() {
-    // return RoomPage(
-    //   playerModel: PlayerModel(id: 1, name: "test"),
-    // );
     return HomePage(
       playerName: AppPreferences.instance.getString("player_name") ?? "",
     );
