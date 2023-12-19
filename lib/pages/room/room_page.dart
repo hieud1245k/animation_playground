@@ -5,6 +5,7 @@ import 'package:animation_playground/blocs/room/room_state.dart';
 import 'package:animation_playground/core/common/constants/app_contants.dart';
 import 'package:animation_playground/data/models/room_model.dart';
 import 'package:animation_playground/di/injection.dart';
+import 'package:animation_playground/helpers/app_helpers.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/pages/manager/card_manager_page.dart';
 import 'package:flutter/material.dart';
@@ -217,14 +218,16 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   void goToCardManager(RoomModel roomModel) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return CardManagerPage(
-              mainPlayer: widget.playerModel, room: roomModel);
-        },
+    Navigator.of(context)
+        .push(
+      AppHelpers.getFadeRoute(
+        CardManagerPage(
+          mainPlayer: widget.playerModel,
+          room: roomModel,
+        ),
       ),
-    ).then((_) {
+    )
+        .then((_) {
       _roomBloc.getRooms();
     });
   }

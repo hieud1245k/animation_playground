@@ -8,6 +8,8 @@ enum Environment {
     switch (this) {
       case LOCAL:
         return "http://127.0.0.1:8090";
+      case DEV:
+        return "http://192.168.2.41:8090";
       default:
         return "";
     }

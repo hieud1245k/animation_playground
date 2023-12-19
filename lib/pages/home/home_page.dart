@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:animation_playground/core/common/utils/utils.dart';
+import 'package:animation_playground/helpers/app_helpers.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -135,11 +136,13 @@ class _HomePageState extends State<HomePage> {
           playerModel.name,
         );
         Navigator.of(context)
-            .push(MaterialPageRoute(
-          builder: (context) => RoomPage(
-            playerModel: playerModel,
+            .push(
+          AppHelpers.getSlideLeftRightRoute(
+            RoomPage(
+              playerModel: playerModel,
+            ),
           ),
-        ))
+        )
             .then((_) {
           AppPreferences.instance.remove("player_name");
         });
