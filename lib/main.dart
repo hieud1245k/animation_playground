@@ -9,7 +9,9 @@ import 'package:animation_playground/di/injection.dart';
 import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/pages/my_application.dart';
 import 'package:animation_playground/widgets/card_manager.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp.dart';
@@ -67,8 +69,12 @@ final stompClient = StompClient(
   ),
 );
 
-String? get hostname => html.window.location.hostname;
-String? get port => html.window.location.port;
+String? get hostname {
+  if (!kIsWeb) {
+    return "";
+  }
+  return html.window.location.hostname;
+}
 
 enum ConnectState {
   IN_PROGRESS,
@@ -84,6 +90,11 @@ void main() async {
   await configureDependencies();
 
   stompClient.activate();
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
 
   runApp(MyApplication());
 }

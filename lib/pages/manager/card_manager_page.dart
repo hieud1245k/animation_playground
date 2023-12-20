@@ -48,36 +48,18 @@ class _CardManagerPageState extends State<CardManagerPage> {
   @override
   void initState() {
     roomModel = widget.room;
-    for (var i = 0; i < 52; i++) {
-      PlayingCard playingCard = PlayingCard(
-        STANDARD_SUITS[
-            ((i + 1) ~/ SUITED_VALUES.length) % STANDARD_SUITS.length],
-        SUITED_VALUES[(i + 1) % SUITED_VALUES.length],
-      );
-      allCards.add(
-        CardItem(
-          state: GlobalKey(),
-          color: Colors.black12,
-          card: playingCard,
-          onTap: () async {
-            try {
-              _roundBloc.openCard(roundModel?.id, playingCard);
-            } catch (e) {
-              Fluttertoast.showToast(msg: "Open card error, $e");
-            }
-          },
-        ),
-      );
-    }
+    allCards = generateCardItems(widget.room);
     stompClient.subscribe(
       destination: "/queue/room/${widget.room.id}",
-      callback: (frame) {
+      callback: (frame) async {
         if (_pendingNotifier.value) {
           return;
         }
         try {
           final roomModel = RoomModel.fromJson(jsonDecode(frame.body ?? ""));
+          List<CardItem> allCards = generateCardItems(roomModel);
           setState(() {
+            this.allCards = allCards;
             this.roomModel = roomModel;
           });
         } catch (e) {
@@ -220,6 +202,32 @@ class _CardManagerPageState extends State<CardManagerPage> {
         ),
       ),
     );
+  }
+
+  List<CardItem> generateCardItems(RoomModel roomModel) {
+    List<CardItem> result = [];
+    for (var i = 0; i < roomModel.playerModels.length * 3; i++) {
+      PlayingCard playingCard = PlayingCard(
+        STANDARD_SUITS[
+            ((i + 1) ~/ SUITED_VALUES.length) % STANDARD_SUITS.length],
+        SUITED_VALUES[(i + 1) % SUITED_VALUES.length],
+      );
+      result.add(
+        CardItem(
+          state: GlobalKey(),
+          color: Colors.black12,
+          card: playingCard,
+          onTap: () async {
+            try {
+              _roundBloc.openCard(roundModel?.id, playingCard);
+            } catch (e) {
+              Fluttertoast.showToast(msg: "Open card error, $e");
+            }
+          },
+        ),
+      );
+    }
+    return result;
   }
 
   Widget _buildStateWidget() {
