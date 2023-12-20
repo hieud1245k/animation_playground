@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:html' as html;
 
 import 'package:animation_playground/classes/card_item.dart';
 import 'package:animation_playground/classes/player.dart';
@@ -9,6 +10,7 @@ import 'package:animation_playground/pages/base_page.dart';
 import 'package:animation_playground/pages/my_application.dart';
 import 'package:animation_playground/widgets/card_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
@@ -41,7 +43,7 @@ void onConnect(StompFrame frame) {
 
 final stompClient = StompClient(
   config: StompConfig(
-    url: 'ws://localhost:8090/ws',
+    url: 'ws://$hostname:8090/ws',
     onConnect: (p0) {
       streamController.sink.add(ConnectState.SUCCESS);
       print("Connect successful!");
@@ -56,10 +58,17 @@ final stompClient = StompClient(
     },
     onWebSocketError: (dynamic error) {
       streamController.add(ConnectState.ERROR);
+      Fluttertoast.showToast(
+        msg: error.toString(),
+        toastLength: Toast.LENGTH_LONG,
+      );
       print("onWebSocketError $error");
     },
   ),
 );
+
+String? get hostname => html.window.location.hostname;
+String? get port => html.window.location.port;
 
 enum ConnectState {
   IN_PROGRESS,

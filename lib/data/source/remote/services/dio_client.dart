@@ -7,6 +7,7 @@ const _kDefaultReceiveTimeout = Duration.millisecondsPerMinute;
 
 // Resolve XMLRequest error
 // adb reverse tcp:8090 tcp:8090
+// flutter run -d chrome --web-port=54349 --web-hostname 192.168.2.41
 
 class DioService {
   final String baseUrl;
